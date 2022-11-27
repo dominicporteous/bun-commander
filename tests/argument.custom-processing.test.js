@@ -1,17 +1,19 @@
 import { describe, expect, it } from "bun:test";
+import { throws } from 'node:assert'
 import commander from '../index.js';
+import sinon from 'sinon'
 
 // Testing default value and custom processing behaviours.
 // Some double assertions in tests to check action argument and .processedArg
 
 it('when argument not specified then callback not called', () => {
-  const mockCoercion = jest.fn();
+  const mockCoercion = sinon.spy();
   const program = new commander.Command();
   program
     .argument('[n]', 'number', mockCoercion)
     .action(() => {});
   program.parse([], { from: 'user' });
-  expect(mockCoercion).not.toHaveBeenCalled();
+  expect(mockCoercion.called).toBe(false);
 });
 
 it('when argument not specified then action argument undefined', () => {
@@ -27,13 +29,13 @@ it('when argument not specified then action argument undefined', () => {
 });
 
 it('when custom with starting value and argument not specified then callback not called', () => {
-  const mockCoercion = jest.fn();
+  const mockCoercion = sinon.spy();
   const program = new commander.Command();
   program
     .argument('[n]', 'number', parseFloat, 1)
     .action(() => {});
   program.parse([], { from: 'user' });
-  expect(mockCoercion).not.toHaveBeenCalled();
+  expect(mockCoercion.called).toBe(false);
 });
 
 it('when custom with starting value and argument not specified with action handler then action argument is starting value', () => {
@@ -83,14 +85,14 @@ it('when default value is defined (without custom processing) and argument not s
 });
 
 it('when argument specified then callback called with value', () => {
-  const mockCoercion = jest.fn();
+  const mockCoercion = sinon.spy();
   const value = '1';
   const program = new commander.Command();
   program
     .argument('[n]', 'number', mockCoercion)
     .action(() => {});
   program.parse([value], { from: 'user' });
-  expect(mockCoercion).toHaveBeenCalledWith(value, undefined);
+  expect(mockCoercion.lastCall.args).toEqual([value, undefined]);
 });
 
 it('when argument specified with action handler then action value is as returned from callback', () => {
@@ -134,18 +136,18 @@ it('when argument specified then program.args has original rather than custom', 
 });
 
 it('when custom with starting value and argument specified then callback called with value and starting value', () => {
-  const mockCoercion = jest.fn();
+  const mockCoercion = sinon.spy();
   const startingValue = 1;
   const value = '2';
   const program = new commander.Command()
     .argument('[n]', 'number', mockCoercion, startingValue)
     .action(() => {});
   program.parse(['node', 'test', value]);
-  expect(mockCoercion).toHaveBeenCalledWith(value, startingValue);
+  expect(mockCoercion.lastCall.args).toEqual([value, startingValue]);
 });
 
 it('when variadic argument specified multiple times then callback called with value and previousValue', () => {
-  const mockCoercion = jest.fn().mockImplementation(() => {
+  const mockCoercion = sinon.stub().callsFake(() => {
     return 'callback';
   });
   const program = new commander.Command();
@@ -153,9 +155,9 @@ it('when variadic argument specified multiple times then callback called with va
     .argument('<n...>', 'number', mockCoercion)
     .action(() => {});
   program.parse(['1', '2'], { from: 'user' });
-  expect(mockCoercion).toHaveBeenCalledTimes(2);
-  expect(mockCoercion).toHaveBeenNthCalledWith(1, '1', undefined);
-  expect(mockCoercion).toHaveBeenNthCalledWith(2, '2', 'callback');
+  expect(mockCoercion.calledTwice).toBe(true);
+  expect(mockCoercion.getCall(0).args).toEqual(['1', undefined]);
+  expect(mockCoercion.getCall(1).args).toEqual(['2', 'callback']);
 });
 
 it('when variadic argument without action handler then .processedArg has array', () => {
@@ -181,9 +183,9 @@ it('when parseFloat "1e2" then action argument is 100', () => {
 
 it('when defined default value for required argument then throw', () => {
   const program = new commander.Command();
-  expect(() => {
+  throws(() => {
     program.argument('<number>', 'float argument', 4);
-  }).toThrow();
+  })
 });
 
 it('when custom processing for argument throws plain error then not CommanderError caught', () => {
@@ -202,7 +204,6 @@ it('when custom processing for argument throws plain error then not CommanderErr
   } catch (err) {
     caughtErr = err;
   }
-
-  expect(caughtErr).toBeInstanceOf(Error);
-  expect(caughtErr).not.toBeInstanceOf(commander.CommanderError);
+  expect(caughtErr instanceof Error).toBe(true);
+  expect(caughtErr instanceof commander.CommanderError).toBe(false);
 });
