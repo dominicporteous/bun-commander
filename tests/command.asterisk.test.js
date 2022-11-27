@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import commander from '../index.js';
+import sinon from 'sinon'
 
 // .command('*') is the old main/default command handler. It adds a listener
 // for 'command:*'. It has been somewhat replaced by the program action handler,
@@ -13,8 +14,8 @@ import commander from '../index.js';
 
 describe(".command('*')", () => {
   it('when no arguments then asterisk action not called', () => {
-    const writeMock = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
-    const mockAction = jest.fn();
+    const writeMock = sinon.stub(Bun, 'write').callsFake(() => { });
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .exitOverride() // to catch help
@@ -25,23 +26,23 @@ describe(".command('*')", () => {
     } catch (err) {
 
     }
-    expect(mockAction).not.toHaveBeenCalled();
-    writeMock.mockRestore();
+    expect(mockAction.called).toBe(false);
+    writeMock.restore();
   });
 
   it('when unrecognised argument then asterisk action called', () => {
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .command('*')
       .argument('[args...]')
       .action(mockAction);
     program.parse(['node', 'test', 'unrecognised-command']);
-    expect(mockAction).toHaveBeenCalled();
+    expect(mockAction.called).toBe(true);
   });
 
   it('when recognised command then asterisk action not called', () => {
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .command('install')
@@ -50,11 +51,11 @@ describe(".command('*')", () => {
       .command('*')
       .action(mockAction);
     program.parse(['node', 'test', 'install']);
-    expect(mockAction).not.toHaveBeenCalled();
+    expect(mockAction.called).toBe(false);
   });
 
   it('when unrecognised command/argument then asterisk action called', () => {
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .command('install');
@@ -63,12 +64,12 @@ describe(".command('*')", () => {
       .argument('[args...]')
       .action(mockAction);
     program.parse(['node', 'test', 'unrecognised-command']);
-    expect(mockAction).toHaveBeenCalled();
+    expect(mockAction.called).toBe(true);
   });
 
   it('when unrecognised argument and known option then asterisk action called', () => {
     // This tests for a regression between v4 and v5. Known default option should not be rejected by program.
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .command('install');
@@ -78,13 +79,13 @@ describe(".command('*')", () => {
       .option('-d, --debug')
       .action(mockAction);
     program.parse(['node', 'test', 'unrecognised-command', '--debug']);
-    expect(mockAction).toHaveBeenCalled();
+    expect(mockAction.called).toBe(true);
     expect(star.opts().debug).toEqual(true);
   });
 
   it('when non-command argument and unknown option then error for unknown option', () => {
     // This is a change in behaviour from v2 which did not error, but is consistent with modern better detection of invalid options
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .exitOverride()
@@ -103,31 +104,32 @@ describe(".command('*')", () => {
       caughtErr = err;
     }
     expect(caughtErr.code).toEqual('commander.unknownOption');
+    expect(mockAction.called).toBe(false);
   });
 });
 
 // Test .on explicitly rather than assuming covered by .command
 describe(".on('command:*')", () => {
   it('when no arguments then listener not called', () => {
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .on('command:*', mockAction);
     program.parse(['node', 'test']);
-    expect(mockAction).not.toHaveBeenCalled();
+    expect(mockAction.called).toBe(false);
   });
 
   it('when unrecognised argument then listener called', () => {
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .on('command:*', mockAction);
     program.parse(['node', 'test', 'unrecognised-command']);
-    expect(mockAction).toHaveBeenCalled();
+    expect(mockAction.called).toBe(true);
   });
 
   it('when recognised command then listener not called', () => {
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .command('install')
@@ -135,31 +137,31 @@ describe(".on('command:*')", () => {
     program
       .on('command:*', mockAction);
     program.parse(['node', 'test', 'install']);
-    expect(mockAction).not.toHaveBeenCalled();
+    expect(mockAction.called).toBe(false);
   });
 
   it('when unrecognised command/argument then listener called', () => {
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .command('install');
     program
       .on('command:*', mockAction);
     program.parse(['node', 'test', 'unrecognised-command']);
-    expect(mockAction).toHaveBeenCalled();
+    expect(mockAction.called).toBe(true);
   });
 
   it('when unrecognised command/argument and unknown option then listener called', () => {
     // Give listener a chance to make a suggestion for misspelled command. The option
     // could only be unknown because the command is not correct.
     // Regression identified in https://github.com/tj/commander.js/issues/1460#issuecomment-772313494
-    const mockAction = jest.fn();
+    const mockAction = sinon.spy();
     const program = new commander.Command();
     program
       .command('install');
     program
       .on('command:*', mockAction);
     program.parse(['node', 'test', 'intsall', '--unknown']);
-    expect(mockAction).toHaveBeenCalled();
+    expect(mockAction.called).toBe(true);
   });
 });
