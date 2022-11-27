@@ -23,9 +23,9 @@ jobs:
         # Optional, if empty the latest bun version will be used
         # Examples: 0.0.77, 0.1.2, >=0.1, *
         bun-version: ${{ matrix.bun-version }}
-    - name: bun install
-      run: bun i
     - name: bun upgrade
       run: bun upgrade --canary
+    - name: bun install
+      run: bun i
     - name: bun wiptest
       run: ls tests/*.test.js | xargs -L 1 bun wiptest
