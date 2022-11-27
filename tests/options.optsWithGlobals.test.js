@@ -1,6 +1,7 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when variety of options used with program then opts is same as optsWithGlobals', () => {
+it('when variety of options used with program then opts is same as optsWithGlobals', () => {
   const program = new commander.Command();
   program
     .option('-b, --boolean')
@@ -13,7 +14,7 @@ test('when variety of options used with program then opts is same as optsWithGlo
   expect(program.opts()).toEqual(program.optsWithGlobals());
 });
 
-test('when options in sub and program then optsWithGlobals includes both', () => {
+it('when options in sub and program then optsWithGlobals includes both', () => {
   const program = new commander.Command();
   let mergedOptions;
   program
@@ -29,7 +30,7 @@ test('when options in sub and program then optsWithGlobals includes both', () =>
   expect(mergedOptions).toEqual({ global: 'GGG', local: 'LLL' });
 });
 
-test('when options in sub and subsub then optsWithGlobals includes both', () => {
+it('when options in sub and subsub then optsWithGlobals includes both', () => {
   const program = new commander.Command();
   let mergedOptions;
   program
@@ -45,7 +46,7 @@ test('when options in sub and subsub then optsWithGlobals includes both', () => 
   expect(mergedOptions).toEqual({ global: 'GGG', local: 'LLL' });
 });
 
-test('when same named option in sub and program then optsWithGlobals includes global', () => {
+it('when same named option in sub and program then optsWithGlobals includes global', () => {
   const program = new commander.Command();
   let mergedOptions;
   program

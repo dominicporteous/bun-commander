@@ -1,9 +1,10 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Tests some private properties as simpler than pure tests of observable behaviours.
 // Testing before and after values in some cases, to ensure value actually changes (when copied).
 
-test('when add subcommand with .command() then calls copyInheritedSettings from parent', () => {
+it('when add subcommand with .command() then calls copyInheritedSettings from parent', () => {
   const program = new commander.Command();
 
   // This is a bit intrusive, but check expectation that copyInheritedSettings is called internally.
@@ -19,7 +20,7 @@ test('when add subcommand with .command() then calls copyInheritedSettings from 
 });
 
 describe('copyInheritedSettings property tests', () => {
-  test('when copyInheritedSettings then copies outputConfiguration(config)', () => {
+  it('when copyInheritedSettings then copies outputConfiguration(config)', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -28,7 +29,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd.configureOutput().foo).toEqual('bar');
   });
 
-  test('when copyInheritedSettings then copies helpOption(false)', () => {
+  it('when copyInheritedSettings then copies helpOption(false)', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
     expect(cmd._hasHelpOption).toBeTruthy();
@@ -38,7 +39,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._hasHelpOption).toBeFalsy();
   });
 
-  test('when copyInheritedSettings then copies helpOption(flags, description)', () => {
+  it('when copyInheritedSettings then copies helpOption(flags, description)', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -50,7 +51,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._helpLongFlag).toBe('--zz');
   });
 
-  test('when copyInheritedSettings then copies addHelpCommand(name, description)', () => {
+  it('when copyInheritedSettings then copies addHelpCommand(name, description)', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -61,7 +62,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._helpCommandDescription).toBe('ddd');
   });
 
-  test('when copyInheritedSettings then copies configureHelp(config)', () => {
+  it('when copyInheritedSettings then copies configureHelp(config)', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -71,7 +72,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd.configureHelp()).toEqual(configuration);
   });
 
-  test('when copyInheritedSettings then copies exitOverride()', () => {
+  it('when copyInheritedSettings then copies exitOverride()', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -81,7 +82,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._exitCallback).toBeTruthy(); // actually a function
   });
 
-  test('when copyInheritedSettings then copies storeOptionsAsProperties()', () => {
+  it('when copyInheritedSettings then copies storeOptionsAsProperties()', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -91,7 +92,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._storeOptionsAsProperties).toBeTruthy();
   });
 
-  test('when copyInheritedSettings then copies combineFlagAndOptionalValue()', () => {
+  it('when copyInheritedSettings then copies combineFlagAndOptionalValue()', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -101,7 +102,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._combineFlagAndOptionalValue).toBeFalsy();
   });
 
-  test('when copyInheritedSettings then copies allowExcessArguments()', () => {
+  it('when copyInheritedSettings then copies allowExcessArguments()', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -111,7 +112,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._allowExcessArguments).toBeFalsy();
   });
 
-  test('when copyInheritedSettings then copies enablePositionalOptions()', () => {
+  it('when copyInheritedSettings then copies enablePositionalOptions()', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 
@@ -121,7 +122,7 @@ describe('copyInheritedSettings property tests', () => {
     expect(cmd._enablePositionalOptions).toBeTruthy();
   });
 
-  test('when copyInheritedSettings then copies showHelpAfterError()', () => {
+  it('when copyInheritedSettings then copies showHelpAfterError()', () => {
     const source = new commander.Command();
     const cmd = new commander.Command();
 

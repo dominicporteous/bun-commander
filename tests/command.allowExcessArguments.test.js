@@ -1,4 +1,5 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Not testing output, just testing whether an error is detected.
 
@@ -14,7 +15,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }
   }
 
-  test('when specify excess program argument then no error by default', () => {
+  it('when specify excess program argument then no error by default', () => {
     const program = new commander.Command();
     configureCommand(program);
 
@@ -23,7 +24,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).not.toThrow();
   });
 
-  test('when specify excess program argument and allowExcessArguments(false) then error', () => {
+  it('when specify excess program argument and allowExcessArguments(false) then error', () => {
     const program = new commander.Command();
     configureCommand(program);
     program
@@ -34,7 +35,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).toThrow();
   });
 
-  test('when specify excess program argument and allowExcessArguments() then no error', () => {
+  it('when specify excess program argument and allowExcessArguments() then no error', () => {
     const program = new commander.Command();
     configureCommand(program);
     program
@@ -45,7 +46,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).not.toThrow();
   });
 
-  test('when specify excess program argument and allowExcessArguments(true) then no error', () => {
+  it('when specify excess program argument and allowExcessArguments(true) then no error', () => {
     const program = new commander.Command();
     configureCommand(program);
     program
@@ -56,7 +57,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).not.toThrow();
   });
 
-  test('when specify excess command argument then no error (by default)', () => {
+  it('when specify excess command argument then no error (by default)', () => {
     const program = new commander.Command();
     const sub = program
       .command('sub');
@@ -67,7 +68,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).not.toThrow();
   });
 
-  test('when specify excess command argument and allowExcessArguments(false) then error', () => {
+  it('when specify excess command argument and allowExcessArguments(false) then error', () => {
     const program = new commander.Command();
     const sub = program
       .command('sub')
@@ -79,7 +80,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).toThrow();
   });
 
-  test('when specify expected arg and allowExcessArguments(false) then no error', () => {
+  it('when specify expected arg and allowExcessArguments(false) then no error', () => {
     const program = new commander.Command();
     configureCommand(program);
     program
@@ -91,7 +92,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).not.toThrow();
   });
 
-  test('when specify excess after <arg> and allowExcessArguments(false) then error', () => {
+  it('when specify excess after <arg> and allowExcessArguments(false) then error', () => {
     const program = new commander.Command();
     configureCommand(program);
     program
@@ -103,7 +104,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).toThrow();
   });
 
-  test('when specify excess after [arg] and allowExcessArguments(false) then error', () => {
+  it('when specify excess after [arg] and allowExcessArguments(false) then error', () => {
     const program = new commander.Command();
     configureCommand(program);
     program
@@ -115,7 +116,7 @@ describe.each([true, false])('allowExcessArguments when action handler: %s', (ha
     }).toThrow();
   });
 
-  test('when specify args for [args...] and allowExcessArguments(false) then no error', () => {
+  it('when specify args for [args...] and allowExcessArguments(false) then no error', () => {
     const program = new commander.Command();
     configureCommand(program);
     program

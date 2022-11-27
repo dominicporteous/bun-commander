@@ -1,6 +1,8 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when set description then get description', () => {
+
+it('when set description then get description', () => {
   const program = new commander.Command();
   const description = 'abcdef';
   program.description(description);

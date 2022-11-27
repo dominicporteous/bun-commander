@@ -1,4 +1,5 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 describe('helpOption', () => {
   let writeSpy;
@@ -20,7 +21,7 @@ describe('helpOption', () => {
     writeErrorSpy.mockRestore();
   });
 
-  test('when helpOption has custom flags then custom short flag invokes help', () => {
+  it('when helpOption has custom flags then custom short flag invokes help', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -30,7 +31,7 @@ describe('helpOption', () => {
     }).toThrow('(outputHelp)');
   });
 
-  test('when helpOption has custom flags then custom long flag invokes help', () => {
+  it('when helpOption has custom flags then custom long flag invokes help', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -40,7 +41,7 @@ describe('helpOption', () => {
     }).toThrow('(outputHelp)');
   });
 
-  test('when helpOption has just custom short flag then custom short flag invokes help', () => {
+  it('when helpOption has just custom short flag then custom short flag invokes help', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -50,7 +51,7 @@ describe('helpOption', () => {
     }).toThrow('(outputHelp)');
   });
 
-  test('when helpOption has just custom long flag then custom long flag invokes help', () => {
+  it('when helpOption has just custom long flag then custom long flag invokes help', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -60,7 +61,7 @@ describe('helpOption', () => {
     }).toThrow('(outputHelp)');
   });
 
-  test('when helpOption has custom description then helpInformation include custom description', () => {
+  it('when helpOption has custom description then helpInformation include custom description', () => {
     const program = new commander.Command();
     program
       .helpOption('-C,--custom-help', 'custom help output');
@@ -68,7 +69,7 @@ describe('helpOption', () => {
     expect(helpInformation).toMatch(/-C,--custom-help +custom help output/);
   });
 
-  test('when helpOption has just flags then helpInformation includes default description', () => {
+  it('when helpOption has just flags then helpInformation includes default description', () => {
     const program = new commander.Command();
     program
       .helpOption('-C,--custom-help');
@@ -76,7 +77,7 @@ describe('helpOption', () => {
     expect(helpInformation).toMatch(/-C,--custom-help +display help for command/);
   });
 
-  test('when helpOption has just description then helpInformation includes default flags', () => {
+  it('when helpOption has just description then helpInformation includes default flags', () => {
     const program = new commander.Command();
     program
       .helpOption(undefined, 'custom help output');
@@ -84,7 +85,7 @@ describe('helpOption', () => {
     expect(helpInformation).toMatch(/-h, --help +custom help output/);
   });
 
-  test('when helpOption(false) then helpInformation does not include --help', () => {
+  it('when helpOption(false) then helpInformation does not include --help', () => {
     const program = new commander.Command();
     program
       .helpOption(false);
@@ -92,7 +93,7 @@ describe('helpOption', () => {
     expect(helpInformation).not.toMatch('--help');
   });
 
-  test('when helpOption(false) then --help is an unknown option', () => {
+  it('when helpOption(false) then --help is an unknown option', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -106,7 +107,7 @@ describe('helpOption', () => {
     expect(caughtErr.code).toBe('commander.unknownOption');
   });
 
-  test('when helpOption(false) then -h is an unknown option', () => {
+  it('when helpOption(false) then -h is an unknown option', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -120,7 +121,7 @@ describe('helpOption', () => {
     expect(caughtErr.code).toBe('commander.unknownOption');
   });
 
-  test('when helpOption(false) then unknown command error does not suggest --help', () => {
+  it('when helpOption(false) then unknown command error does not suggest --help', () => {
     const program = new commander.Command();
     program
       .exitOverride()

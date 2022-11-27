@@ -1,6 +1,7 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when command argument in choices then argument set', () => {
+it('when command argument in choices then argument set', () => {
   const program = new commander.Command();
   let shade;
   program
@@ -11,7 +12,7 @@ test('when command argument in choices then argument set', () => {
   expect(shade).toBe('red');
 });
 
-test('when command argument is not in choices then error', () => {
+it('when command argument is not in choices then error', () => {
   // Lightweight check, more detailed testing of behaviour in command.exitOverride.test.js
   const program = new commander.Command();
   program
@@ -26,7 +27,7 @@ test('when command argument is not in choices then error', () => {
 });
 
 describe('choices parameter is treated as readonly, per TypeScript declaration', () => {
-  test('when choices called then parameter does not change', () => {
+  it('when choices called then parameter does not change', () => {
     // Unlikely this could break, but check the API we are declaring in TypeScript.
     const original = ['red', 'blue', 'green'];
     const param = original.slice();
@@ -34,7 +35,7 @@ describe('choices parameter is treated as readonly, per TypeScript declaration',
     expect(param).toEqual(original);
   });
 
-  test('when choices called and argChoices later changed then parameter does not change', () => {
+  it('when choices called and argChoices later changed then parameter does not change', () => {
     const original = ['red', 'blue', 'green'];
     const param = original.slice();
     const argument = new commander.Argument('<shade>').choices(param);
@@ -42,7 +43,7 @@ describe('choices parameter is treated as readonly, per TypeScript declaration',
     expect(param).toEqual(original);
   });
 
-  test('when choices called and parameter changed the choices does not change', () => {
+  it('when choices called and parameter changed the choices does not change', () => {
     const program = new commander.Command();
     const param = ['red', 'blue'];
     program

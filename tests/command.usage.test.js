@@ -1,15 +1,16 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when default usage and check program help then starts with default usage', () => {
+it('when default usage and check program help then starts with default usage', () => {
   const program = new commander.Command();
 
   program.name('test');
   const helpInformation = program.helpInformation();
 
-  expect(helpInformation).toMatch(/^Usage: test \[options\]/);
+  expect(helpInformation.startsWith('Usage: test [options]')).toBe(true);
 });
 
-test('when custom usage and check program help then starts with custom usage', () => {
+it('when custom usage and check program help then starts with custom usage', () => {
   const myUsage = 'custom';
   const program = new commander.Command();
   program
@@ -18,10 +19,10 @@ test('when custom usage and check program help then starts with custom usage', (
   program.name('test');
   const helpInformation = program.helpInformation();
 
-  expect(helpInformation).toMatch(new RegExp(`^Usage: test ${myUsage}`));
+  expect(helpInformation.startsWith(`Usage: test ${myUsage}`)).toBe(true);
 });
 
-test('when default usage and check subcommand help then starts with default usage including program name', () => {
+it('when default usage and check subcommand help then starts with default usage including program name', () => {
   const program = new commander.Command();
   const subCommand = program
     .command('info');
@@ -29,10 +30,10 @@ test('when default usage and check subcommand help then starts with default usag
   program.name('test');
   const helpInformation = subCommand.helpInformation();
 
-  expect(helpInformation).toMatch(/^Usage: test info \[options\]/);
+  expect(helpInformation.startsWith('Usage: test info [options]')).toBe(true);
 });
 
-test('when custom usage and check subcommand help then starts with custom usage including program name', () => {
+it('when custom usage and check subcommand help then starts with custom usage including program name', () => {
   const myUsage = 'custom';
   const program = new commander.Command();
   const subCommand = program
@@ -42,52 +43,52 @@ test('when custom usage and check subcommand help then starts with custom usage 
   program.name('test');
   const helpInformation = subCommand.helpInformation();
 
-  expect(helpInformation).toMatch(new RegExp(`^Usage: test info ${myUsage}`));
+  expect(helpInformation.startsWith(`Usage: test info ${myUsage}`)).toBe(true);
 });
 
-test('when has option then [options] included in usage', () => {
+it('when has option then [options] included in usage', () => {
   const program = new commander.Command();
 
   program
     .option('--foo');
 
-  expect(program.usage()).toMatch('[options]');
+  expect(program.usage().includes('[options]')).toBe(true);
 });
 
-test('when no options then [options] not included in usage', () => {
+it('when no options then [options] not included in usage', () => {
   const program = new commander.Command();
 
   program
     .helpOption(false);
 
-  expect(program.usage()).not.toMatch('[options]');
+    expect(program.usage().includes('[options]')).toBe(false);
 });
 
-test('when has command then [command] included in usage', () => {
+it('when has command then [command] included in usage', () => {
   const program = new commander.Command();
 
   program
     .command('foo');
 
-  expect(program.usage()).toMatch('[command]');
+    expect(program.usage().includes('[command]')).toBe(true);
 });
 
-test('when no commands then [command] not included in usage', () => {
+it('when no commands then [command] not included in usage', () => {
   const program = new commander.Command();
 
-  expect(program.usage()).not.toMatch('[command]');
+  expect(program.usage().includes('[command]')).toBe(false);
 });
 
-test('when argument then argument included in usage', () => {
+it('when argument then argument included in usage', () => {
   const program = new commander.Command();
 
   program
     .argument('<file>');
 
-  expect(program.usage()).toMatch('<file>');
+    expect(program.usage().includes('<file>')).toBe(true);
 });
 
-test('when options and command and argument then all three included in usage', () => {
+it('when options and command and argument then all three included in usage', () => {
   const program = new commander.Command();
 
   program
@@ -95,5 +96,5 @@ test('when options and command and argument then all three included in usage', (
     .option('--alpha')
     .command('beta');
 
-  expect(program.usage()).toEqual('[options] [command] <file>');
+  expect(program.usage()).toBe('[options] [command] <file>');
 });

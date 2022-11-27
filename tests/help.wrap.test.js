@@ -1,24 +1,25 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // These are tests of the Help class, not of the Command help.
 // There is some overlap with the higher level Command tests (which predate Help).
 
 describe('wrap', () => {
-  test('when string fits into width then returns input', () => {
+  it('when string fits into width then returns input', () => {
     const text = 'a '.repeat(24) + 'a';
     const helper = new commander.Help();
     const wrapped = helper.wrap(text, 50, 3);
     expect(wrapped).toEqual(text);
   });
 
-  test('when string shorter than indent then returns input', () => {
+  it('when string shorter than indent then returns input', () => {
     const text = 'a';
     const helper = new commander.Help();
     const wrapped = helper.wrap(text, 50, 3);
     expect(wrapped).toEqual(text);
   });
 
-  test('when string exceeds width then wrap', () => {
+  it('when string exceeds width then wrap', () => {
     const text = 'a '.repeat(30) + 'a';
     const helper = new commander.Help();
     const wrapped = helper.wrap(text, 50, 0);
@@ -26,7 +27,7 @@ describe('wrap', () => {
 ${'a '.repeat(5)}a`);
   });
 
-  test('when string exceeds width then wrap and indent', () => {
+  it('when string exceeds width then wrap and indent', () => {
     const text = 'a '.repeat(30) + 'a';
     const helper = new commander.Help();
     const wrapped = helper.wrap(text, 50, 10);
@@ -34,21 +35,21 @@ ${'a '.repeat(5)}a`);
 ${' '.repeat(10)}${'a '.repeat(5)}a`);
   });
 
-  test('when width < 40 then do not wrap', () => {
+  it('when width < 40 then do not wrap', () => {
     const text = 'a '.repeat(30) + 'a';
     const helper = new commander.Help();
     const wrapped = helper.wrap(text, 39, 0);
     expect(wrapped).toEqual(text);
   });
 
-  test('when text has line breaks then respect and indent', () => {
+  it('when text has line breaks then respect and indent', () => {
     const text = 'term description\nanother line';
     const helper = new commander.Help();
     const wrapped = helper.wrap(text, 78, 5);
     expect(wrapped).toEqual('term description\n     another line');
   });
 
-  test('when text already formatted with line breaks and indent then do not touch', () => {
+  it('when text already formatted with line breaks and indent then do not touch', () => {
     const text = 'term a '.repeat(25) + '\n   ' + 'a '.repeat(25) + 'a';
     const helper = new commander.Help();
     const wrapped = helper.wrap(text, 78, 5);
@@ -60,7 +61,7 @@ describe('wrapping by formatHelp', () => {
   // Test auto wrap and indent with some manual strings.
   // Fragile tests with complete help output.
 
-  test('when long option description then wrap and indent', () => {
+  it('when long option description then wrap and indent', () => {
     const program = new commander.Command();
     program
       .configureHelp({ helpWidth: 80 })
@@ -79,7 +80,7 @@ Options:
     expect(program.helpInformation()).toBe(expectedOutput);
   });
 
-  test('when long option description and default then wrap and indent', () => {
+  it('when long option description and default then wrap and indent', () => {
     const program = new commander.Command();
     program
       .configureHelp({ helpWidth: 80 })
@@ -97,7 +98,7 @@ Options:
     expect(program.helpInformation()).toBe(expectedOutput);
   });
 
-  test('when long command description then wrap and indent', () => {
+  it('when long command description then wrap and indent', () => {
     const program = new commander.Command();
     program
       .configureHelp({ helpWidth: 80 })
@@ -120,7 +121,7 @@ Commands:
     expect(program.helpInformation()).toBe(expectedOutput);
   });
 
-  test('when not enough room then help not wrapped', () => {
+  it('when not enough room then help not wrapped', () => {
     // Not wrapping if less than 40 columns available for wrapping.
     const program = new commander.Command();
     const commandDescription = 'description text of very long command which should not be automatically be wrapped. Do fugiat eiusmod ipsum laboris excepteur pariatur sint ullamco tempor labore eu.';
@@ -142,7 +143,7 @@ Commands:
     expect(program.helpInformation()).toBe(expectedOutput);
   });
 
-  test('when option descripton preformatted then only add small indent', () => {
+  it('when option descripton preformatted then only add small indent', () => {
     // #396: leave custom format alone, apart from space-space indent
     const optionSpec = '-t, --time <HH:MM>';
     const program = new commander.Command();

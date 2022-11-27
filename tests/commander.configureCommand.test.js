@@ -1,31 +1,34 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import { throws } from 'node:assert'
+import commander from '../index.js';
+import sinon from 'sinon'
 
 // Mostly testing direct on program, limited check that (sub)command working same.
 
 // Default behaviours
 
-test('when default then options not stored on command', () => {
+it('when default then options not stored on command', () => {
   const program = new commander.Command();
   program
     .option('--foo <value>', 'description');
   program.parse(['node', 'test', '--foo', 'bar']);
-  expect(program.foo).toBeUndefined();
+  expect(program.foo).toBe(undefined);
   expect(program.opts().foo).toBe('bar');
 });
 
-test('when default then options+command passed to action', () => {
+it('when default then options+command passed to action', () => {
   const program = new commander.Command();
-  const callback = jest.fn();
+  const callback = sinon.spy();
   program
     .argument('<value>')
     .action(callback);
   program.parse(['node', 'test', 'value']);
-  expect(callback).toHaveBeenCalledWith('value', program.opts(), program);
+  expect(callback.getCall(0).args).toEqual(['value', program.opts(), program]);
 });
 
 // storeOptionsAsProperties
 
-test('when storeOptionsAsProperties() then options stored on command', () => {
+it('when storeOptionsAsProperties() then options stored on command', () => {
   const program = new commander.Command();
   program
     .storeOptionsAsProperties()
@@ -35,7 +38,7 @@ test('when storeOptionsAsProperties() then options stored on command', () => {
   expect(program.opts().foo).toBe('bar');
 });
 
-test('when storeOptionsAsProperties(true) then options stored on command', () => {
+it('when storeOptionsAsProperties(true) then options stored on command', () => {
   const program = new commander.Command();
   program
     .storeOptionsAsProperties(true)
@@ -45,42 +48,42 @@ test('when storeOptionsAsProperties(true) then options stored on command', () =>
   expect(program.opts().foo).toBe('bar');
 });
 
-test('when storeOptionsAsProperties(false) then options not stored on command', () => {
+it('when storeOptionsAsProperties(false) then options not stored on command', () => {
   const program = new commander.Command();
   program
     .storeOptionsAsProperties(false)
     .option('--foo <value>', 'description');
   program.parse(['node', 'test', '--foo', 'bar']);
-  expect(program.foo).toBeUndefined();
+  expect(program.foo).toBe(undefined);
   expect(program.opts().foo).toBe('bar');
 });
 
-test('when storeOptionsAsProperties() then command+command passed to action', () => {
+it('when storeOptionsAsProperties() then command+command passed to action', () => {
   const program = new commander.Command();
-  const callback = jest.fn();
+  const callback = sinon.spy();
   program
     .storeOptionsAsProperties()
     .argument('<value>')
     .action(callback);
   program.parse(['node', 'test', 'value']);
-  expect(callback).toHaveBeenCalledWith('value', program, program);
+  expect(callback.getCall(0).args).toEqual(['value', program, program]);
 });
 
-test('when storeOptionsAsProperties(false) then opts+command passed to action', () => {
+it('when storeOptionsAsProperties(false) then opts+command passed to action', () => {
   const program = new commander.Command();
-  const callback = jest.fn();
+  const callback = sinon.spy();
   program
     .storeOptionsAsProperties(false)
     .argument('<value>')
     .action(callback);
   program.parse(['node', 'test', 'value']);
-  expect(callback).toHaveBeenCalledWith('value', program.opts(), program);
+  expect(callback.getCall(0).args).toEqual(['value', program.opts(), program]);
 });
 
-test('when storeOptionsAsProperties() after adding option then throw', () => {
+it('when storeOptionsAsProperties() after adding option then throw', () => {
   const program = new commander.Command();
   program.option('--port <number>', 'port number', '80');
-  expect(() => {
+  throws(() => {
     program.storeOptionsAsProperties(false);
-  }).toThrow();
+  })
 });

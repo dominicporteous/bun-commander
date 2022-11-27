@@ -1,8 +1,9 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when set summary then get summary', () => {
+it('when set summary then get summary', () => {
   const program = new commander.Command();
   const summary = 'abcdef';
   program.summary(summary);
-  expect(program.summary()).toMatch(summary);
+  expect(program.summary()).toEqual(summary);
 });

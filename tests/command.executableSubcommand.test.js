@@ -1,9 +1,10 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Executable subcommand tests that didn't fit in elsewhere.
 
 // This is the default behaviour when no default command and no action handlers
-test('when no command specified and executable then display help', () => {
+it('when no command specified and executable then display help', () => {
   // Optional. Suppress normal output to keep test output clean.
   const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
   const program = new commander.Command();

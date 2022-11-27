@@ -1,5 +1,5 @@
+import { describe, expect, it } from "bun:test";
 import { program, Command, Option, CommanderError, InvalidArgumentError, InvalidOptionArgumentError, Help, createCommand } from '../';
-
 import * as commander from '../';
 
 // Do some simple checks that expected imports are available at runtime.
@@ -11,38 +11,38 @@ function checkClass(obj: object, name: string): void {
   expect(obj.constructor.name).toEqual(name);
 }
 
-test('legacy default export of global Command', () => {
+it('legacy default export of global Command', () => {
   checkClass(commander, 'Command');
 });
 
-test('program', () => {
+it('program', () => {
   checkClass(program, 'Command');
 });
 
-test('createCommand', () => {
+it('createCommand', () => {
   checkClass(createCommand(), 'Command');
 });
 
-test('Command', () => {
+it('Command', () => {
   checkClass(new Command('name'), 'Command');
 });
 
-test('Option', () => {
+it('Option', () => {
   checkClass(new Option('-e, --example', 'description'), 'Option');
 });
 
-test('CommanderError', () => {
+it('CommanderError', () => {
   checkClass(new CommanderError(1, 'code', 'failed'), 'CommanderError');
 });
 
-test('InvalidArgumentError', () => {
+it('InvalidArgumentError', () => {
   checkClass(new InvalidArgumentError('failed'), 'InvalidArgumentError');
 });
 
-test('InvalidOptionArgumentError', () => { // Deprecated
+it('InvalidOptionArgumentError', () => { // Deprecated
   checkClass(new InvalidOptionArgumentError('failed'), 'InvalidArgumentError');
 });
 
-test('Help', () => {
+it('Help', () => {
   checkClass(new Help(), 'Help');
 });

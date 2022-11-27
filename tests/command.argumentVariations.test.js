@@ -1,4 +1,5 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Do some low-level checks that the multiple ways of specifying command arguments produce same internal result,
 // and not exhaustively testing all methods elsewhere.
@@ -92,7 +93,7 @@ function getMultipleArgCases(arg1, arg2) {
   ];
 }
 
-test('when add arguments using multiple methods then all added', () => {
+it('when add arguments using multiple methods then all added', () => {
   // This is not a key use case, but explicitly test that additive behaviour.
   const program = new commander.Command();
   const cmd = program.command('sub <arg1> <arg2>');

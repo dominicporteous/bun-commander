@@ -1,7 +1,9 @@
-const { Command, Option } = require('../');
+import { describe, expect, it } from "bun:test";
+import { throws } from 'node:assert'
+import { Command, Option } from '../index.js';
 
 describe('check priorities', () => {
-  test('when source undefined and implied undefined then implied is undefined', () => {
+  it('when source undefined and implied undefined then implied is undefined', () => {
     const program = new Command();
     program
       .addOption(new Option('--foo').implies({ bar: 'implied' }))
@@ -10,7 +12,7 @@ describe('check priorities', () => {
     expect(program.opts()).toEqual({});
   });
 
-  test('when source default and implied undefined then implied is undefined', () => {
+  it('when source default and implied undefined then implied is undefined', () => {
     const program = new Command();
     program
       .addOption(new Option('--foo').implies({ bar: 'implied' }).default('default'))
@@ -19,7 +21,7 @@ describe('check priorities', () => {
     expect(program.opts()).toEqual({ foo: 'default' });
   });
 
-  test('when source from env and implied undefined then implied is implied', () => {
+  it('when source from env and implied undefined then implied is implied', () => {
     const program = new Command();
     const envName = 'COMMANDER_TEST_DELETE_ME';
     process.env[envName] = 'env';
@@ -31,7 +33,7 @@ describe('check priorities', () => {
     delete process.env[envName];
   });
 
-  test('when source from cli and implied undefined then implied is implied', () => {
+  it('when source from cli and implied undefined then implied is implied', () => {
     const program = new Command();
     program
       .addOption(new Option('--foo').implies({ bar: 'implied' }))
@@ -40,7 +42,7 @@ describe('check priorities', () => {
     expect(program.opts()).toEqual({ foo: true, bar: 'implied' });
   });
 
-  test('when source cli and implied default then implied is implied', () => {
+  it('when source cli and implied default then implied is implied', () => {
     const program = new Command();
     program
       .addOption(new Option('--foo').implies({ bar: 'implied' }))
@@ -49,7 +51,7 @@ describe('check priorities', () => {
     expect(program.opts()).toEqual({ foo: true, bar: 'implied' });
   });
 
-  test('when source cli and env default then implied is env', () => {
+  it('when source cli and env default then implied is env', () => {
     const program = new Command();
     const envName = 'COMMANDER_TEST_DELETE_ME';
     process.env[envName] = 'env';
@@ -62,7 +64,7 @@ describe('check priorities', () => {
   });
 });
 
-test('when imply non-option then ok and stored', () => {
+it('when imply non-option then ok and stored', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ bar: 'implied' }));
@@ -70,7 +72,7 @@ test('when imply non-option then ok and stored', () => {
   expect(program.opts()).toEqual({ foo: true, bar: 'implied' });
 });
 
-test('when imply multiple values then store multiple values', () => {
+it('when imply multiple values then store multiple values', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ one: 'ONE', two: 'TWO' }))
@@ -80,7 +82,7 @@ test('when imply multiple values then store multiple values', () => {
   expect(program.opts()).toEqual({ foo: true, one: 'ONE', two: 'TWO' });
 });
 
-test('when imply multiple times then store multiple values', () => {
+it('when imply multiple times then store multiple values', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ one: 'ONE' }).implies({ two: 'TWO' }))
@@ -90,7 +92,7 @@ test('when imply multiple times then store multiple values', () => {
   expect(program.opts()).toEqual({ foo: true, one: 'ONE', two: 'TWO' });
 });
 
-test('when imply from positive option then positive implied', () => {
+it('when imply from positive option then positive implied', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ implied: 'POSITIVE' }))
@@ -99,7 +101,7 @@ test('when imply from positive option then positive implied', () => {
   expect(program.opts()).toEqual({ foo: true, implied: 'POSITIVE' });
 });
 
-test('when imply from negative option then negative implied', () => {
+it('when imply from negative option then negative implied', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ implied: 'POSITIVE' }))
@@ -108,7 +110,7 @@ test('when imply from negative option then negative implied', () => {
   expect(program.opts()).toEqual({ foo: false, implied: 'NEGATIVE' });
 });
 
-test('when imply from lone negative option then negative implied', () => {
+it('when imply from lone negative option then negative implied', () => {
   const program = new Command();
   program
     .addOption(new Option('--no-foo').implies({ implied: 'NEGATIVE' }));
@@ -116,7 +118,7 @@ test('when imply from lone negative option then negative implied', () => {
   expect(program.opts()).toEqual({ foo: false, implied: 'NEGATIVE' });
 });
 
-test('when imply from negative option with preset then negative implied', () => {
+it('when imply from negative option with preset then negative implied', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ implied: 'POSITIVE' }))
@@ -125,7 +127,7 @@ test('when imply from negative option with preset then negative implied', () => 
   expect(program.opts()).toEqual({ foo: 'FALSE', implied: 'NEGATIVE' });
 });
 
-test('when chained implies then only explicitly trigger', () => {
+it('when chained implies then only explicitly trigger', () => {
   const program = new Command();
   program
     .addOption(new Option('--one').implies({ two: true }))
@@ -135,7 +137,7 @@ test('when chained implies then only explicitly trigger', () => {
   expect(program.opts()).toEqual({ one: true, two: true });
 });
 
-test('when looped implies then no infinite loop', () => {
+it('when looped implies then no infinite loop', () => {
   const program = new Command();
   program
     .addOption(new Option('--ying').implies({ yang: true }))
@@ -144,7 +146,7 @@ test('when looped implies then no infinite loop', () => {
   expect(program.opts()).toEqual({ ying: true, yang: true });
 });
 
-test('when conflict with implied value then throw', () => {
+it('when conflict with implied value then throw', () => {
   const program = new Command();
   program
     .exitOverride()
@@ -155,23 +157,20 @@ test('when conflict with implied value then throw', () => {
     .addOption(new Option('--binary').conflicts('unary'))
     .addOption(new Option('--one').implies({ unary: true }));
 
-  expect(() => {
+  throws(() => {
     program.parse(['--binary', '--one'], { from: 'user' });
-  }).toThrow();
+  });
 });
 
-test('when requiredOption with implied value then not throw', () => {
+it('when requiredOption with implied value then not throw', () => {
   const program = new Command();
   program
     .requiredOption('--target <target-file>')
     .addOption(new Option('--default-target').implies({ target: 'default-file' }));
-
-  expect(() => {
-    program.parse(['--default-target'], { from: 'user' });
-  }).not.toThrow();
+  program.parse(['--default-target'], { from: 'user' });
 });
 
-test('when implies on program and use subcommand then program updated', () => {
+it('when implies on program and use subcommand then program updated', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ bar: 'implied' }));
@@ -182,7 +181,7 @@ test('when implies on program and use subcommand then program updated', () => {
   expect(program.opts().bar).toEqual('implied');
 });
 
-test('when option with implies used multiple times then implied gets single value', () => {
+it('when option with implies used multiple times then implied gets single value', () => {
   const program = new Command();
   program
     .addOption(new Option('--foo').implies({ bar: 'implied' }))
@@ -191,7 +190,7 @@ test('when option with implies used multiple times then implied gets single valu
   expect(program.opts().bar).toEqual('implied');
 });
 
-test('when implied option has custom processing then custom processing not called', () => {
+it('when implied option has custom processing then custom processing not called', () => {
   let called = false;
   const program = new Command();
   program

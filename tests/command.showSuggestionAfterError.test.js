@@ -1,4 +1,5 @@
-const { Command } = require('../');
+import { describe, expect, it } from "bun:test";
+import { Command } from '../index.js';
 
 function getSuggestion(program, arg) {
   let message = '';
@@ -17,7 +18,7 @@ function getSuggestion(program, arg) {
   return match ? match[2] : null;
 }
 
-test('when unknown command and showSuggestionAfterError() then show suggestion', () => {
+it('when unknown command and showSuggestionAfterError() then show suggestion', () => {
   const program = new Command();
   program.showSuggestionAfterError();
   program.command('example');
@@ -25,7 +26,7 @@ test('when unknown command and showSuggestionAfterError() then show suggestion',
   expect(suggestion).toBe('example');
 });
 
-test('when unknown command and showSuggestionAfterError(false) then do not show suggestion', () => {
+it('when unknown command and showSuggestionAfterError(false) then do not show suggestion', () => {
   const program = new Command();
   program.showSuggestionAfterError(false);
   program.command('example');
@@ -33,7 +34,7 @@ test('when unknown command and showSuggestionAfterError(false) then do not show 
   expect(suggestion).toBe(null);
 });
 
-test('when unknown option and showSuggestionAfterError() then show suggestion', () => {
+it('when unknown option and showSuggestionAfterError() then show suggestion', () => {
   const program = new Command();
   program.showSuggestionAfterError();
   program.option('--example');
@@ -41,7 +42,7 @@ test('when unknown option and showSuggestionAfterError() then show suggestion', 
   expect(suggestion).toBe('--example');
 });
 
-test('when unknown option and showSuggestionAfterError(false) then do not show suggestion', () => {
+it('when unknown option and showSuggestionAfterError(false) then do not show suggestion', () => {
   const program = new Command();
   program.showSuggestionAfterError(false);
   program.option('--example');

@@ -1,6 +1,7 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when when multiple short flags specified then all values are true', () => {
+it('when when multiple short flags specified then all values are true', () => {
   const program = new commander.Command();
   program
     .option('-p, --pepper', 'add pepper')

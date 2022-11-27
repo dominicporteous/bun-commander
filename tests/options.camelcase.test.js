@@ -1,8 +1,9 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Capitalise the letters of words after dashes, but otherwise preserve case
 
-test('when option defined with --word-word then option property is wordWord', () => {
+it('when option defined with --word-word then option property is wordWord', () => {
   const program = new commander.Command();
   program
     .option('--my-option', 'description');
@@ -10,7 +11,7 @@ test('when option defined with --word-word then option property is wordWord', ()
   expect(program.opts().myOption).toBe(true);
 });
 
-test('when option defined with --word-wORD then option property is wordWORD', () => {
+it('when option defined with --word-wORD then option property is wordWORD', () => {
   const program = new commander.Command();
   program
     .option('--my-oPTION', 'description');
@@ -18,7 +19,7 @@ test('when option defined with --word-wORD then option property is wordWORD', ()
   expect(program.opts().myOPTION).toBe(true);
 });
 
-test('when option defined with --word-WORD then option property is wordWORD', () => {
+it('when option defined with --word-WORD then option property is wordWORD', () => {
   const program = new commander.Command();
   program
     .option('--my-OPTION', 'description');
@@ -26,7 +27,7 @@ test('when option defined with --word-WORD then option property is wordWORD', ()
   expect(program.opts().myOPTION).toBe(true);
 });
 
-test('when option defined with --word-word-word then option property is wordWordWord', () => {
+it('when option defined with --word-word-word then option property is wordWordWord', () => {
   const program = new commander.Command();
   program
     .option('--my-special-option', 'description');
@@ -34,7 +35,7 @@ test('when option defined with --word-word-word then option property is wordWord
   expect(program.opts().mySpecialOption).toBe(true);
 });
 
-test('when option defined with --word-WORD-word then option property is wordWORDWord', () => {
+it('when option defined with --word-WORD-word then option property is wordWORDWord', () => {
   const program = new commander.Command();
   program
     .option('--my-SPECIAL-option', 'description');
@@ -42,7 +43,7 @@ test('when option defined with --word-WORD-word then option property is wordWORD
   expect(program.opts().mySPECIALOption).toBe(true);
 });
 
-test('when option defined with --Word then option property is Word', () => {
+it('when option defined with --Word then option property is Word', () => {
   const program = new commander.Command();
   program
     .option('--Myoption', 'description');

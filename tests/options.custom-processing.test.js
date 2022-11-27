@@ -1,4 +1,6 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
+import sinon from 'sinon'
 
 function myParseInt(value, dummyPrevious) {
   // parseInt takes a string and a radix
@@ -17,16 +19,16 @@ function commaSeparatedList(value, dummyPrevious) {
   return value.split(',');
 }
 
-test('when option not specified then callback not called', () => {
-  const mockCoercion = jest.fn();
+it('when option not specified then callback not called', () => {
+  const mockCoercion = sinon.spy();
   const program = new commander.Command();
   program
     .option('-i, --integer <n>', 'number', mockCoercion);
   program.parse(['node', 'test']);
-  expect(mockCoercion).not.toHaveBeenCalled();
+  expect(mockCoercion.called).toBe(false);
 });
 
-test('when option not specified then value is undefined', () => {
+it('when option not specified then value is undefined', () => {
   const program = new commander.Command();
   program
     .option('-i, --integer <n>', 'number', myParseInt);
@@ -34,16 +36,16 @@ test('when option not specified then value is undefined', () => {
   expect(program.opts().integer).toBeUndefined();
 });
 
-test('when starting value is defined and option not specified then callback not called', () => {
-  const mockCoercion = jest.fn();
+it('when starting value is defined and option not specified then callback not called', () => {
+  const mockCoercion = sinon.spy();
   const program = new commander.Command();
   program
     .option('-i, --integer <n>', 'number', mockCoercion, 1);
   program.parse(['node', 'test']);
-  expect(mockCoercion).not.toHaveBeenCalled();
+  expect(mockCoercion.called).toBe(false);
 });
 
-test('when starting value is defined and option not specified then value is starting value', () => {
+it('when starting value is defined and option not specified then value is starting value', () => {
   // NB: Can not specify a starting value for a boolean flag! Discovered when writing this test...
   const startingValue = 1;
   const program = new commander.Command();
@@ -53,17 +55,17 @@ test('when starting value is defined and option not specified then value is star
   expect(program.opts().integer).toBe(startingValue);
 });
 
-test('when option specified then callback called with value', () => {
-  const mockCoercion = jest.fn();
+it('when option specified then callback called with value', () => {
+  const mockCoercion = sinon.spy();
   const value = '1';
   const program = new commander.Command();
   program
     .option('-i, --integer <n>', 'number', mockCoercion);
   program.parse(['node', 'test', '-i', value]);
-  expect(mockCoercion).toHaveBeenCalledWith(value, undefined);
+  expect(mockCoercion.lastCall.args).toEqual([value, undefined]);
 });
 
-test('when option specified then value is as returned from callback', () => {
+it('when option specified then value is as returned from callback', () => {
   const callbackResult = 2;
   const program = new commander.Command();
   program
@@ -74,33 +76,33 @@ test('when option specified then value is as returned from callback', () => {
   expect(program.opts().integer).toBe(callbackResult);
 });
 
-test('when starting value is defined and option specified then callback called with value and starting value', () => {
-  const mockCoercion = jest.fn();
+it('when starting value is defined and option specified then callback called with value and starting value', () => {
+  const mockCoercion = sinon.spy();
   const startingValue = 1;
   const value = '2';
   const program = new commander.Command();
   program
     .option('-i, --integer <n>', 'number', mockCoercion, startingValue);
   program.parse(['node', 'test', '-i', value]);
-  expect(mockCoercion).toHaveBeenCalledWith(value, startingValue);
+  expect(mockCoercion.lastCall.args).toEqual([value, startingValue]);
 });
 
-test('when option specified multiple times then callback called with value and previousValue', () => {
-  const mockCoercion = jest.fn().mockImplementation(() => {
+it('when option specified multiple times then callback called with value and previousValue', () => {
+  const mockCoercion = sinon.stub().callsFake(() => {
     return 'callback';
   });
   const program = new commander.Command();
   program
     .option('-i, --integer <n>', 'number', mockCoercion);
   program.parse(['node', 'test', '-i', '1', '-i', '2']);
-  expect(mockCoercion).toHaveBeenCalledTimes(2);
-  expect(mockCoercion).toHaveBeenNthCalledWith(1, '1', undefined);
-  expect(mockCoercion).toHaveBeenNthCalledWith(2, '2', 'callback');
+  expect(mockCoercion.calledTwice).toBe(true);
+  expect(mockCoercion.getCall(0).args).toEqual(['1', undefined]);
+  expect(mockCoercion.getCall(1).args).toEqual(['2', 'callback']);
 });
 
 // Now some functional tests like the examples in the README!
 
-test('when parseFloat "1e2" then value is 100', () => {
+it('when parseFloat "1e2" then value is 100', () => {
   const program = new commander.Command();
   program
     .option('-f, --float <number>', 'float argument', parseFloat);
@@ -108,7 +110,7 @@ test('when parseFloat "1e2" then value is 100', () => {
   expect(program.opts().float).toBe(100);
 });
 
-test('when myParseInt "1" then value is 1', () => {
+it('when myParseInt "1" then value is 1', () => {
   const program = new commander.Command();
   program
     .option('-i, --integer <number>', 'integer argument', myParseInt);
@@ -116,7 +118,7 @@ test('when myParseInt "1" then value is 1', () => {
   expect(program.opts().integer).toBe(1);
 });
 
-test('when increaseVerbosity -v -v -v then value is 3', () => {
+it('when increaseVerbosity -v -v -v then value is 3', () => {
   const program = new commander.Command();
   program
     .option('-v, --verbose', 'verbosity that can be increased', increaseVerbosity, 0);
@@ -124,7 +126,7 @@ test('when increaseVerbosity -v -v -v then value is 3', () => {
   expect(program.opts().verbose).toBe(3);
 });
 
-test('when collect -c a -c b -c c then value is [a, b, c]', () => {
+it('when collect -c a -c b -c c then value is [a, b, c]', () => {
   const program = new commander.Command();
   program
     .option('-c, --collect <value>', 'repeatable value', collect, []);
@@ -132,7 +134,7 @@ test('when collect -c a -c b -c c then value is [a, b, c]', () => {
   expect(program.opts().collect).toEqual(['a', 'b', 'c']);
 });
 
-test('when commaSeparatedList x,y,z then value is [x, y, z]', () => {
+it('when commaSeparatedList x,y,z then value is [x, y, z]', () => {
   const program = new commander.Command();
   program
     .option('-l, --list <items>', 'comma separated list', commaSeparatedList);

@@ -1,11 +1,13 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import { throws } from 'node:assert'
+import commander from '../index.js';
 
 // Testing some Electron conventions but not directly using Electron to avoid overheads.
 // https://github.com/electron/electron/issues/4690#issuecomment-217435222
 // https://www.electronjs.org/docs/api/process#processdefaultapp-readonly
 
 describe('.parse() args from', () => {
-  test('when no args then use process.argv and app/script/args', () => {
+  it('when no args then use process.argv and app/script/args', () => {
     const program = new commander.Command();
     const hold = process.argv;
     process.argv = 'node script.js user'.split(' ');
@@ -14,7 +16,7 @@ describe('.parse() args from', () => {
     expect(program.args).toEqual(['user']);
   });
 
-  test('when no args and electron properties and not default app then use process.argv and app/args', () => {
+  it('when no args and electron properties and not default app then use process.argv and app/args', () => {
     const program = new commander.Command();
     const holdArgv = process.argv;
     process.versions.electron = '1.2.3';
@@ -25,19 +27,19 @@ describe('.parse() args from', () => {
     expect(program.args).toEqual(['user']);
   });
 
-  test('when args then app/script/args', () => {
+  it('when args then app/script/args', () => {
     const program = new commander.Command();
     program.parse('node script.js user'.split(' '));
     expect(program.args).toEqual(['user']);
   });
 
-  test('when args from "node" then app/script/args', () => {
+  it('when args from "node" then app/script/args', () => {
     const program = new commander.Command();
     program.parse('node script.js user'.split(' '), { from: 'node' });
     expect(program.args).toEqual(['user']);
   });
 
-  test('when args from "electron" and not default app then app/args', () => {
+  it('when args from "electron" and not default app then app/args', () => {
     const program = new commander.Command();
     const hold = process.defaultApp;
     process.defaultApp = undefined;
@@ -46,7 +48,7 @@ describe('.parse() args from', () => {
     expect(program.args).toEqual(['user']);
   });
 
-  test('when args from "electron" and default app then app/script/args', () => {
+  it('when args from "electron" and default app then app/script/args', () => {
     const program = new commander.Command();
     const hold = process.defaultApp;
     process.defaultApp = true;
@@ -55,22 +57,22 @@ describe('.parse() args from', () => {
     expect(program.args).toEqual(['user']);
   });
 
-  test('when args from "user" then args', () => {
+  it('when args from "user" then args', () => {
     const program = new commander.Command();
     program.parse('user'.split(' '), { from: 'user' });
     expect(program.args).toEqual(['user']);
   });
 
-  test('when args from "silly" then throw', () => {
+  it('when args from "silly" then throw', () => {
     const program = new commander.Command();
-    expect(() => {
+    throws(() => {
       program.parse(['node', 'script.js'], { from: 'silly' });
-    }).toThrow();
+    })
   });
 });
 
 describe('return type', () => {
-  test('when call .parse then returns program', () => {
+  it('when call .parse then returns program', () => {
     const program = new commander.Command();
     program
       .action(() => { });
@@ -79,7 +81,7 @@ describe('return type', () => {
     expect(result).toBe(program);
   });
 
-  test('when await .parseAsync then returns program', async() => {
+  it('when await .parseAsync then returns program', async() => {
     const program = new commander.Command();
     program
       .action(() => { });
@@ -90,15 +92,15 @@ describe('return type', () => {
 });
 
 // Easy mistake to make when writing unit tests
-test('when parse strings instead of array then throw', () => {
+it('when parse strings instead of array then throw', () => {
   const program = new commander.Command();
-  expect(() => {
+  throws(() => {
     program.parse('node', 'test');
-  }).toThrow();
+  })
 });
 
 describe('parse parameter is treated as readonly, per TypeScript declaration', () => {
-  test('when parse called then parameter does not change', () => {
+  it('when parse called then parameter does not change', () => {
     const program = new commander.Command();
     program.option('--debug');
     const original = ['node', '--debug', 'arg'];
@@ -107,7 +109,7 @@ describe('parse parameter is treated as readonly, per TypeScript declaration', (
     expect(param).toEqual(original);
   });
 
-  test('when parse called and parsed args later changed then parameter does not change', () => {
+  it('when parse called and parsed args later changed then parameter does not change', () => {
     const program = new commander.Command();
     program.option('--debug');
     const original = ['node', '--debug', 'arg'];
@@ -118,7 +120,7 @@ describe('parse parameter is treated as readonly, per TypeScript declaration', (
     expect(param).toEqual(original);
   });
 
-  test('when parse called and param later changed then parsed args do not change', () => {
+  it('when parse called and param later changed then parsed args do not change', () => {
     const program = new commander.Command();
     program.option('--debug');
     const param = ['node', '--debug', 'arg'];
@@ -132,7 +134,7 @@ describe('parse parameter is treated as readonly, per TypeScript declaration', (
 });
 
 describe('parseAsync parameter is treated as readonly, per TypeScript declaration', () => {
-  test('when parse called then parameter does not change', async() => {
+  it('when parse called then parameter does not change', async() => {
     const program = new commander.Command();
     program.option('--debug');
     const original = ['node', '--debug', 'arg'];
@@ -141,7 +143,7 @@ describe('parseAsync parameter is treated as readonly, per TypeScript declaratio
     expect(param).toEqual(original);
   });
 
-  test('when parseAsync called and parsed args later changed then parameter does not change', async() => {
+  it('when parseAsync called and parsed args later changed then parameter does not change', async() => {
     const program = new commander.Command();
     program.option('--debug');
     const original = ['node', '--debug', 'arg'];
@@ -152,7 +154,7 @@ describe('parseAsync parameter is treated as readonly, per TypeScript declaratio
     expect(param).toEqual(original);
   });
 
-  test('when parseAsync called and param later changed then parsed args do not change', async() => {
+  it('when parseAsync called and param later changed then parsed args do not change', async() => {
     const program = new commander.Command();
     program.option('--debug');
     const param = ['node', '--debug', 'arg'];

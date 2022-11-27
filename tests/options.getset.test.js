@@ -1,7 +1,8 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 describe.each([true, false])('storeOptionsAsProperties is %s', (storeOptionsAsProperties) => {
-  test('when option specified on CLI then value returned by getOptionValue', () => {
+  it('when option specified on CLI then value returned by getOptionValue', () => {
     const program = new commander.Command();
     program
       .storeOptionsAsProperties(storeOptionsAsProperties)
@@ -11,7 +12,7 @@ describe.each([true, false])('storeOptionsAsProperties is %s', (storeOptionsAsPr
     expect(program.getOptionValue('cheese')).toBe(cheeseType);
   });
 
-  test('when setOptionValue then value returned by opts', () => {
+  it('when setOptionValue then value returned by opts', () => {
     const program = new commander.Command();
     const cheeseType = 'blue';
     // Note: opts() only returns declared options when options stored as properties
@@ -23,7 +24,7 @@ describe.each([true, false])('storeOptionsAsProperties is %s', (storeOptionsAsPr
   });
 });
 
-test('when setOptionValueWithSource then value returned by opts', () => {
+it('when setOptionValueWithSource then value returned by opts', () => {
   const program = new commander.Command();
   const cheeseValue = 'blue';
   program
@@ -32,7 +33,7 @@ test('when setOptionValueWithSource then value returned by opts', () => {
   expect(program.opts().cheese).toBe(cheeseValue);
 });
 
-test('when setOptionValueWithSource then source returned by getOptionValueSource', () => {
+it('when setOptionValueWithSource then source returned by getOptionValueSource', () => {
   const program = new commander.Command();
   program
     .option('--cheese [type]', 'cheese type')
@@ -40,7 +41,7 @@ test('when setOptionValueWithSource then source returned by getOptionValueSource
   expect(program.getOptionValueSource('cheese')).toBe('config');
 });
 
-test('when option value parsed from env then option source is env', () => {
+it('when option value parsed from env then option source is env', () => {
   const program = new commander.Command();
   process.env.BAR = 'env';
   program
@@ -50,7 +51,7 @@ test('when option value parsed from env then option source is env', () => {
   delete process.env.BAR;
 });
 
-test('when option value parsed from cli then option source is cli', () => {
+it('when option value parsed from cli then option source is cli', () => {
   const program = new commander.Command();
   program
     .addOption(new commander.Option('-f, --foo').env('BAR'));
@@ -58,7 +59,7 @@ test('when option value parsed from cli then option source is cli', () => {
   expect(program.getOptionValueSource('foo')).toBe('cli');
 });
 
-test('when setOptionValue then clears previous source', () => {
+it('when setOptionValue then clears previous source', () => {
   const program = new commander.Command();
   program
     .option('--foo', 'description', 'default value');

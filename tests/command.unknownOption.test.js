@@ -1,25 +1,12 @@
-const commander = require('../');
+import { beforeAll, afterEach, afterAll, describe, expect, it } from "bun:test";
+import { silentCommand } from './util/silent';
 
 // Checking for detection of unknown options, including regression tests for some past issues.
 
 describe('unknownOption', () => {
-  // Optional. Use internal knowledge to suppress output to keep test output clean.
-  let writeErrorSpy;
 
-  beforeAll(() => {
-    writeErrorSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
-  });
-
-  afterEach(() => {
-    writeErrorSpy.mockClear();
-  });
-
-  afterAll(() => {
-    writeErrorSpy.mockRestore();
-  });
-
-  test('when specify unknown option with subcommand and action handler then error', () => {
-    const program = new commander.Command();
+  it('when specify unknown option with subcommand and action handler then error', () => {
+    const program = silentCommand();
     program
       .exitOverride()
       .command('info')
@@ -31,11 +18,11 @@ describe('unknownOption', () => {
     } catch (err) {
       caughtErr = err;
     }
-    expect(caughtErr.code).toBe('commander.unknownOption');
+    expect(caughtErr.code).toEqual('commander.unknownOption');
   });
 
-  test('when specify unknown option with subcommand argument and action handler then error', () => {
-    const program = new commander.Command();
+  it('when specify unknown option with subcommand argument and action handler then error', () => {
+    const program = silentCommand();
     program
       .exitOverride()
       .command('info <file>')
@@ -50,8 +37,8 @@ describe('unknownOption', () => {
     expect(caughtErr.code).toBe('commander.unknownOption');
   });
 
-  test('when specify unknown option with program and action handler then error', () => {
-    const program = new commander.Command();
+  it('when specify unknown option with program and action handler then error', () => {
+    const program = silentCommand();
     program
       .exitOverride()
       .argument('[file]')
@@ -66,9 +53,9 @@ describe('unknownOption', () => {
     expect(caughtErr.code).toBe('commander.unknownOption');
   });
 
-  test('when specify unknown option with program argument and action handler then error', () => {
+  it('when specify unknown option with program argument and action handler then error', () => {
     // Regression test from #965
-    const program = new commander.Command();
+    const program = silentCommand();
     program
       .exitOverride()
       .argument('[file]')
@@ -83,8 +70,8 @@ describe('unknownOption', () => {
     expect(caughtErr.code).toBe('commander.unknownOption');
   });
 
-  test('when specify unknown option with simple program then error', () => {
-    const program = new commander.Command();
+  it('when specify unknown option with simple program then error', () => {
+    const program = silentCommand();
     program
       .exitOverride();
     let caughtErr;
@@ -96,8 +83,8 @@ describe('unknownOption', () => {
     expect(caughtErr.code).toBe('commander.unknownOption');
   });
 
-  test('when specify unknown global option before subcommand then error', () => {
-    const program = new commander.Command();
+  it('when specify unknown global option before subcommand then error', () => {
+    const program = silentCommand();
     program
       .exitOverride();
     program.command('sub');

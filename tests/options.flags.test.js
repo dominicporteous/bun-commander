@@ -1,8 +1,9 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Test the various ways flags can be specified in the first parameter to `.option`
 
-test('when only short flag defined and not specified then value is undefined', () => {
+it('when only short flag defined and not specified then value is undefined', () => {
   const program = new commander.Command();
   program
     .option('-p', 'add pepper');
@@ -10,7 +11,7 @@ test('when only short flag defined and not specified then value is undefined', (
   expect(program.opts().p).toBeUndefined();
 });
 
-test('when only short flag defined and specified then value is true', () => {
+it('when only short flag defined and specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('-p', 'add pepper');
@@ -18,7 +19,7 @@ test('when only short flag defined and specified then value is true', () => {
   expect(program.opts().p).toBe(true);
 });
 
-test('when only long flag defined and not specified then value is undefined', () => {
+it('when only long flag defined and not specified then value is undefined', () => {
   const program = new commander.Command();
   program
     .option('--pepper', 'add pepper');
@@ -26,7 +27,7 @@ test('when only long flag defined and not specified then value is undefined', ()
   expect(program.opts().pepper).toBeUndefined();
 });
 
-test('when only long flag defined and specified then value is true', () => {
+it('when only long flag defined and specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('--pepper', 'add pepper');
@@ -34,7 +35,7 @@ test('when only long flag defined and specified then value is true', () => {
   expect(program.opts().pepper).toBe(true);
 });
 
-test('when "short,long" flags defined and short specified then value is true', () => {
+it('when "short,long" flags defined and short specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('-p,--pepper', 'add pepper');
@@ -42,7 +43,7 @@ test('when "short,long" flags defined and short specified then value is true', (
   expect(program.opts().pepper).toBe(true);
 });
 
-test('when "short,long" flags defined and long specified then value is true', () => {
+it('when "short,long" flags defined and long specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('-p,--pepper', 'add pepper');
@@ -50,7 +51,7 @@ test('when "short,long" flags defined and long specified then value is true', ()
   expect(program.opts().pepper).toBe(true);
 });
 
-test('when "short|long" flags defined and short specified then value is true', () => {
+it('when "short|long" flags defined and short specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('-p|--pepper', 'add pepper');
@@ -58,7 +59,7 @@ test('when "short|long" flags defined and short specified then value is true', (
   expect(program.opts().pepper).toBe(true);
 });
 
-test('when "short|long" flags defined and long specified then value is true', () => {
+it('when "short|long" flags defined and long specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('-p|--pepper', 'add pepper');
@@ -66,7 +67,7 @@ test('when "short|long" flags defined and long specified then value is true', ()
   expect(program.opts().pepper).toBe(true);
 });
 
-test('when "short long" flags defined and short specified then value is true', () => {
+it('when "short long" flags defined and short specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('-p --pepper', 'add pepper');
@@ -74,7 +75,7 @@ test('when "short long" flags defined and short specified then value is true', (
   expect(program.opts().pepper).toBe(true);
 });
 
-test('when "short long" flags defined and long specified then value is true', () => {
+it('when "short long" flags defined and long specified then value is true', () => {
   const program = new commander.Command();
   program
     .option('-p --pepper', 'add pepper');

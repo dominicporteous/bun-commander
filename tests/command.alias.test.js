@@ -1,9 +1,10 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Running alias commands is tested in command.executableSubcommand.lookup.test.js
 // Test various other behaviours for .alias
 
-test('when command has alias then appears in help', () => {
+it('when command has alias then appears in help', () => {
   const program = new commander.Command();
   program
     .command('info [thing]')
@@ -12,7 +13,7 @@ test('when command has alias then appears in help', () => {
   expect(helpInformation).toMatch('info|i');
 });
 
-test('when command has aliases added separately then only first appears in help', () => {
+it('when command has aliases added separately then only first appears in help', () => {
   const program = new commander.Command();
   program
     .command('list [thing]')
@@ -22,7 +23,7 @@ test('when command has aliases added separately then only first appears in help'
   expect(helpInformation).toMatch('list|ls ');
 });
 
-test('when command has aliases then only first appears in help', () => {
+it('when command has aliases then only first appears in help', () => {
   const program = new commander.Command();
   program
     .command('list [thing]')
@@ -31,7 +32,7 @@ test('when command has aliases then only first appears in help', () => {
   expect(helpInformation).toMatch('list|ls ');
 });
 
-test('when command name = alias then error', () => {
+it('when command name = alias then error', () => {
   const program = new commander.Command();
   expect(() => {
     program
@@ -40,7 +41,7 @@ test('when command name = alias then error', () => {
   }).toThrow("Command alias can't be the same as its name");
 });
 
-test('when use alias then action handler called', () => {
+it('when use alias then action handler called', () => {
   const program = new commander.Command();
   const actionMock = jest.fn();
   program
@@ -51,7 +52,7 @@ test('when use alias then action handler called', () => {
   expect(actionMock).toHaveBeenCalled();
 });
 
-test('when use second alias added separately then action handler called', () => {
+it('when use second alias added separately then action handler called', () => {
   const program = new commander.Command();
   const actionMock = jest.fn();
   program
@@ -63,7 +64,7 @@ test('when use second alias added separately then action handler called', () => 
   expect(actionMock).toHaveBeenCalled();
 });
 
-test('when use second of aliases then action handler called', () => {
+it('when use second of aliases then action handler called', () => {
   const program = new commander.Command();
   const actionMock = jest.fn();
   program
@@ -74,21 +75,21 @@ test('when use second of aliases then action handler called', () => {
   expect(actionMock).toHaveBeenCalled();
 });
 
-test('when set alias then can get alias', () => {
+it('when set alias then can get alias', () => {
   const program = new commander.Command();
   const alias = 'abcde';
   program.alias(alias);
   expect(program.alias()).toEqual(alias);
 });
 
-test('when set aliases then can get aliases', () => {
+it('when set aliases then can get aliases', () => {
   const program = new commander.Command();
   const aliases = ['a', 'b'];
   program.aliases(aliases);
   expect(program.aliases()).toEqual(aliases);
 });
 
-test('when set alias on executable then can get alias', () => {
+it('when set alias on executable then can get alias', () => {
   const program = new commander.Command();
   const alias = 'abcde';
   program
@@ -98,7 +99,7 @@ test('when set alias on executable then can get alias', () => {
 });
 
 describe('aliases parameter is treated as readonly, per TypeScript declaration', () => {
-  test('when aliases called then parameter does not change', () => {
+  it('when aliases called then parameter does not change', () => {
     // Unlikely this could break, but check the API we are declaring in TypeScript.
     const original = ['b', 'bld'];
     const param = original.slice();
@@ -106,7 +107,7 @@ describe('aliases parameter is treated as readonly, per TypeScript declaration',
     expect(param).toEqual(original);
   });
 
-  test('when aliases called and aliases later changed then parameter does not change', () => {
+  it('when aliases called and aliases later changed then parameter does not change', () => {
     const original = ['b', 'bld'];
     const param = original.slice();
     const cmd = new commander.Command('build').aliases(param);
@@ -114,7 +115,7 @@ describe('aliases parameter is treated as readonly, per TypeScript declaration',
     expect(param).toEqual(original);
   });
 
-  test('when aliases called and parameter later changed then aliases does not change', () => {
+  it('when aliases called and parameter later changed then aliases does not change', () => {
     const original = ['b', 'bld'];
     const param = original.slice();
     const cmd = new commander.Command('build').aliases(param);

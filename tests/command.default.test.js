@@ -1,7 +1,8 @@
-const childProcess = require('child_process');
-const commander = require('../');
-const path = require('path');
-const util = require('util');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
+import childProcess from 'node:child_process';
+import path from 'node:path';
+import util from 'node:util';
 
 const execFileAsync = util.promisify(childProcess.execFile);
 
@@ -9,18 +10,18 @@ describe('default executable command', () => {
   // Calling node explicitly so pm works without file suffix cross-platform.
   const pm = path.join(__dirname, './fixtures/pm');
 
-  test('when default subcommand and no command then call default', async() => {
-    const { stdout } = await execFileAsync('node', [pm]);
+  it('when default subcommand and no command then call default', async() => {
+    const { stdout } = await execFileAsync('bun', [pm]);
     expect(stdout).toBe('default\n');
   });
 
-  test('when default subcommand and unrecognised argument then call default with argument', async() => {
-    const { stdout } = await execFileAsync('node', [pm, 'an-argument']);
+  it('when default subcommand and unrecognised argument then call default with argument', async() => {
+    const { stdout } = await execFileAsync('bun', [pm, 'an-argument']);
     expect(stdout).toBe("default\n[ 'an-argument' ]\n");
   });
 
-  test('when default subcommand and unrecognised option then call default with option', async() => {
-    const { stdout } = await execFileAsync('node', [pm, '--an-option']);
+  it('when default subcommand and unrecognised option then call default with option', async() => {
+    const { stdout } = await execFileAsync('bun', [pm, '--an-option']);
     expect(stdout).toBe("default\n[ '--an-option' ]\n");
   });
 });
@@ -39,21 +40,21 @@ describe('default action command', () => {
     return { program, actionMock };
   }
 
-  test('when default subcommand and no command then call default', () => {
+  it('when default subcommand and no command then call default', () => {
     const { program, actionMock } = makeProgram();
-    program.parse('node test.js'.split(' '));
+    program.parse('bun test.js'.split(' '));
     expect(actionMock).toHaveBeenCalled();
   });
 
-  test('when default subcommand and unrecognised argument then call default', () => {
+  it('when default subcommand and unrecognised argument then call default', () => {
     const { program, actionMock } = makeProgram();
-    program.parse('node test.js an-argument'.split(' '));
+    program.parse('bun test.js an-argument'.split(' '));
     expect(actionMock).toHaveBeenCalled();
   });
 
-  test('when default subcommand and unrecognised option then call default', () => {
+  it('when default subcommand and unrecognised option then call default', () => {
     const { program, actionMock } = makeProgram();
-    program.parse('node test.js --an-option'.split(' '));
+    program.parse('bun test.js --an-option'.split(' '));
     expect(actionMock).toHaveBeenCalled();
   });
 });
@@ -74,21 +75,21 @@ describe('default added command', () => {
     return { program, actionMock };
   }
 
-  test('when default subcommand and no command then call default', () => {
+  it('when default subcommand and no command then call default', () => {
     const { program, actionMock } = makeProgram();
-    program.parse('node test.js'.split(' '));
+    program.parse('bun test.js'.split(' '));
     expect(actionMock).toHaveBeenCalled();
   });
 
-  test('when default subcommand and unrecognised argument then call default', () => {
+  it('when default subcommand and unrecognised argument then call default', () => {
     const { program, actionMock } = makeProgram();
-    program.parse('node test.js an-argument'.split(' '));
+    program.parse('bun test.js an-argument'.split(' '));
     expect(actionMock).toHaveBeenCalled();
   });
 
-  test('when default subcommand and unrecognised option then call default', () => {
+  it('when default subcommand and unrecognised option then call default', () => {
     const { program, actionMock } = makeProgram();
-    program.parse('node test.js --an-option'.split(' '));
+    program.parse('bun test.js --an-option'.split(' '));
     expect(actionMock).toHaveBeenCalled();
   });
 });

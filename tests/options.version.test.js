@@ -1,61 +1,65 @@
-const commander = require('../');
+import { describe, expect, it, beforeEach, afterEach } from "bun:test";
+import { throws } from 'node:assert'
+import sinon from 'sinon'
+import { silentCommand } from './util/silent.js'
 
 // Test .version. Using exitOverride to check behaviour (instead of mocking process.exit).
 
 describe('.version', () => {
-  test('when no .version and specify --version then unknown option error', () => {
+  it('when no .version and specify --version then unknown option error', () => {
     const errorMessage = 'unknownOption';
-    const program = new commander.Command();
+    const program = silentCommand();
     // Override unknownOption as convenient way to check fails as expected.
-    jest.spyOn(program, 'unknownOption').mockImplementation(() => { throw new Error(errorMessage); });
-
-    expect(() => {
-      program.parse(['node', 'test', '--version']);
-    }).toThrow(errorMessage);
+    const stub = sinon.stub(program, 'unknownOption').throws(new Error(errorMessage))
+    throws(() => program.parse(['node', 'test', '--version']),  (err) => err.message.includes(errorMessage))
   });
 
-  test('when no .version then helpInformation does not include version', () => {
-    const program = new commander.Command();
-
+  it('when no .version then helpInformation does not include version', () => {
+    const program = silentCommand();
     const helpInformation = program.helpInformation();
 
     expect(helpInformation.includes('Usage')).toBe(true);
     expect(helpInformation.includes('version')).toBe(false);
   });
 
-  test('when specify default short flag then display version', () => {
+  it('when specify default short flag then display version', () => {
     const myVersion = '1.2.3';
-    const writeMock = jest.fn();
-    const program = new commander.Command();
+    const writeMock = sinon.spy()
+    const program = silentCommand();
     program
       .exitOverride()
       .configureOutput({ writeOut: writeMock })
       .version(myVersion);
-
-    expect(() => {
-      program.parse(['node', 'test', '-V']);
-    }).toThrow(myVersion);
-    expect(writeMock).toHaveBeenCalledWith(`${myVersion}\n`);
-  });
-
-  test('when specify default long flag then display version', () => {
-    const myVersion = '1.2.3';
-    const writeMock = jest.fn();
-    const program = new commander.Command();
-    program
-      .exitOverride()
-      .configureOutput({ writeOut: writeMock })
-      .version(myVersion);
-
-    expect(() => {
+    
+    try {
       program.parse(['node', 'test', '--version']);
-    }).toThrow(myVersion);
-    expect(writeMock).toHaveBeenCalledWith(`${myVersion}\n`);
+    } catch (err) {
+      expect(err.message).toContain(myVersion)
+    }
+    expect(writeMock.calledWith(`${myVersion}\n`)).toBe(true)
   });
 
-  test('when default .version then helpInformation includes default version help', () => {
+  it('when specify default long flag then display version', () => {
     const myVersion = '1.2.3';
-    const program = new commander.Command();
+    const writeMock = sinon.spy();
+    const program = silentCommand();
+    program
+      .exitOverride()
+      .configureOutput({ writeOut: writeMock })
+      .version(myVersion);
+
+    try {
+      program.parse(['node', 'test', '--version']);
+    } catch (err) {
+      expect(err.message).toContain(myVersion)
+    }
+
+    expect(writeMock.calledWith(`${myVersion}\n`)).toBe(true)
+  });
+
+  it('when default .version then helpInformation includes default version help', () => {
+    const myVersion = '1.2.3';
+    const program = silentCommand();
     program
       .version(myVersion);
 
@@ -65,71 +69,83 @@ describe('.version', () => {
     expect(helpInformation.includes('output the version number')).toBe(true);
   });
 
-  test('when specify custom short flag then display version', () => {
+  it('when specify custom short flag then display version', () => {
     const myVersion = '1.2.3';
-    const writeMock = jest.fn();
-    const program = new commander.Command();
+    const writeMock = sinon.spy();
+    const program = silentCommand();
     program
       .exitOverride()
       .configureOutput({ writeOut: writeMock })
       .version(myVersion, '-r, --revision');
 
-    expect(() => {
-      program.parse(['node', 'test', '-r']);
-    }).toThrow(myVersion);
-    expect(writeMock).toHaveBeenCalledWith(`${myVersion}\n`);
+      try {
+        program.parse(['node', 'test', '-r']);
+      } catch (err) {
+        expect(err.message).toContain(myVersion)
+      }
+  
+      expect(writeMock.calledWith(`${myVersion}\n`)).toBe(true)
   });
 
-  test('when specify just custom short flag then display version', () => {
+  it('when specify just custom short flag then display version', () => {
     const myVersion = '1.2.3';
-    const writeMock = jest.fn();
-    const program = new commander.Command();
+    const writeMock = sinon.spy();
+    const program = silentCommand();
     program
       .exitOverride()
       .configureOutput({ writeOut: writeMock })
       .version(myVersion, '-r');
 
-    expect(() => {
+    try {
       program.parse(['node', 'test', '-r']);
-    }).toThrow(myVersion);
-    expect(writeMock).toHaveBeenCalledWith(`${myVersion}\n`);
+    } catch (err) {
+      expect(err.message).toContain(myVersion)
+    }
+
+    expect(writeMock.calledWith(`${myVersion}\n`)).toBe(true)
   });
 
-  test('when specify custom long flag then display version', () => {
+  it('when specify custom long flag then display version', () => {
     const myVersion = '1.2.3';
-    const writeMock = jest.fn();
-    const program = new commander.Command();
+    const writeMock = sinon.spy();
+    const program = silentCommand();
     program
       .exitOverride()
       .configureOutput({ writeOut: writeMock })
       .version(myVersion, '-r, --revision');
 
-    expect(() => {
+    try {
       program.parse(['node', 'test', '--revision']);
-    }).toThrow(myVersion);
-    expect(writeMock).toHaveBeenCalledWith(`${myVersion}\n`);
+    } catch (err) {
+      expect(err.message).toContain(myVersion)
+    }
+
+    expect(writeMock.calledWith(`${myVersion}\n`)).toBe(true)
   });
 
-  test('when specify just custom long flag then display version', () => {
+  it('when specify just custom long flag then display version', () => {
     const myVersion = '1.2.3';
-    const writeMock = jest.fn();
-    const program = new commander.Command();
+    const writeMock = sinon.spy();
+    const program = silentCommand();
     program
       .exitOverride()
       .configureOutput({ writeOut: writeMock })
       .version(myVersion, '--revision');
 
-    expect(() => {
+    try {
       program.parse(['node', 'test', '--revision']);
-    }).toThrow(myVersion);
-    expect(writeMock).toHaveBeenCalledWith(`${myVersion}\n`);
+    } catch (err) {
+      expect(err.message).toContain(myVersion)
+    }
+
+    expect(writeMock.calledWith(`${myVersion}\n`)).toBe(true)
   });
 
-  test('when custom .version then helpInformation includes custom version help', () => {
+  it('when custom .version then helpInformation includes custom version help', () => {
     const myVersion = '1.2.3';
     const myVersionFlags = '-r, --revision';
     const myVersionDescription = 'custom description';
-    const program = new commander.Command();
+    const program = silentCommand();
     program
       .version(myVersion, myVersionFlags, myVersionDescription);
 
@@ -139,9 +155,9 @@ describe('.version', () => {
     expect(helpInformation.includes(myVersionDescription)).toBe(true);
   });
 
-  test('when have .version+version and specify version then command called', () => {
-    const actionMock = jest.fn();
-    const program = new commander.Command();
+  it('when have .version+version and specify version then command called', () => {
+    const actionMock = sinon.spy();
+    const program = silentCommand();
     program
       .version('1.2.3')
       .command('version')
@@ -149,13 +165,13 @@ describe('.version', () => {
 
     program.parse(['node', 'test', 'version']);
 
-    expect(actionMock).toHaveBeenCalled();
+    expect(actionMock.called).toBe(true)
   });
 
-  test('when have .version+version and specify --version then version displayed', () => {
+  it('when have .version+version and specify --version then version displayed', () => {
     const myVersion = '1.2.3';
-    const writeMock = jest.fn();
-    const program = new commander.Command();
+    const writeMock = sinon.spy();
+    const program = silentCommand();
     program
       .exitOverride()
       .configureOutput({ writeOut: writeMock })
@@ -163,15 +179,16 @@ describe('.version', () => {
       .command('version')
       .action(() => {});
 
-    expect(() => {
-      program.parse(['node', 'test', '--version']);
-    }).toThrow(myVersion);
-    expect(writeMock).toHaveBeenCalledWith(`${myVersion}\n`);
+      try {
+        program.parse(['node', 'test', '--version']);
+      } catch (err) { }
+  
+      expect(writeMock.calledWith(`${myVersion}\n`)).toBe(true)
   });
 
-  test('when specify version then can get version', () => {
+  it('when specify version then can get version', () => {
     const myVersion = '1.2.3';
-    const program = new commander.Command();
+    const program = silentCommand();
     program.version(myVersion);
     expect(program.version()).toEqual(myVersion);
   });

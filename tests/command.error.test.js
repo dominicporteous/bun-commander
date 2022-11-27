@@ -1,6 +1,8 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when error called with message then message displayed on stderr', () => {
+
+it('when error called with message then message displayed on stderr', () => {
   const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => { });
   const stderrSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
 
@@ -13,7 +15,7 @@ test('when error called with message then message displayed on stderr', () => {
   exitSpy.mockRestore();
 });
 
-test('when error called with no exitCode then process.exit(1)', () => {
+it('when error called with no exitCode then process.exit(1)', () => {
   const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => { });
 
   const program = new commander.Command();
@@ -27,7 +29,7 @@ test('when error called with no exitCode then process.exit(1)', () => {
   exitSpy.mockRestore();
 });
 
-test('when error called with exitCode 2 then process.exit(2)', () => {
+it('when error called with exitCode 2 then process.exit(2)', () => {
   const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => { });
 
   const program = new commander.Command();
@@ -40,7 +42,7 @@ test('when error called with exitCode 2 then process.exit(2)', () => {
   exitSpy.mockRestore();
 });
 
-test('when error called with code and exitOverride then throws with code', () => {
+it('when error called with code and exitOverride then throws with code', () => {
   const program = new commander.Command();
   let errorThrown;
   program

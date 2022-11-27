@@ -1,5 +1,6 @@
-const path = require('path');
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
+import path from 'node:path';
 
 describe('command with conflicting options', () => {
   function makeProgram() {
@@ -30,14 +31,14 @@ describe('command with conflicting options', () => {
     delete process.env.NO_DUAL;
   });
 
-  test('should call action if there are no explicit conflicting options set', () => {
+  it('should call action if there are no explicit conflicting options set', () => {
     const { program, actionMock } = makeProgram();
     program.parse('node test.js foo --json'.split(' '));
     expect(actionMock).toHaveBeenCalledTimes(1);
     expect(actionMock).toHaveBeenCalledWith({ json: true }, expect.any(Object));
   });
 
-  test('should call action when there are no implicit conflicting options set', () => {
+  it('should call action when there are no implicit conflicting options set', () => {
     const { program, actionMock } = makeProgram();
     program.parse('node test.js foo --silent'.split(' '));
     expect(actionMock).toHaveBeenCalledTimes(1);
@@ -47,7 +48,7 @@ describe('command with conflicting options', () => {
     );
   });
 
-  test('should exit with error if conflicting options were set', () => {
+  it('should exit with error if conflicting options were set', () => {
     const { program } = makeProgram();
 
     expect(() => {
@@ -55,7 +56,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '-j, --json' cannot be used with option '-s, --silent'");
   });
 
-  test('should report the env variable as the conflicting option source, when conflicting option is set', () => {
+  it('should report the env variable as the conflicting option source, when conflicting option is set', () => {
     const { program } = makeProgram();
 
     process.env.SILENT = true;
@@ -65,7 +66,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '-j, --json' cannot be used with environment variable 'SILENT'");
   });
 
-  test('should report the env variable as the configured option source, when configured option is set', () => {
+  it('should report the env variable as the configured option source, when configured option is set', () => {
     const { program } = makeProgram();
 
     process.env.JSON = true;
@@ -75,7 +76,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: environment variable 'JSON' cannot be used with option '-s, --silent'");
   });
 
-  test('should report both env variables as sources, when configured option and conflicting option are set', () => {
+  it('should report both env variables as sources, when configured option and conflicting option are set', () => {
     const { program } = makeProgram();
 
     process.env.SILENT = true;
@@ -86,7 +87,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: environment variable 'JSON' cannot be used with environment variable 'SILENT'");
   });
 
-  test('should allow default value with a conflicting option', () => {
+  it('should allow default value with a conflicting option', () => {
     const { program, actionMock } = makeProgram();
 
     program.commands[0].addOption(new commander.Option('-d, --debug', 'print debug logs').default(true).conflicts(['silent']));
@@ -97,7 +98,7 @@ describe('command with conflicting options', () => {
     expect(actionMock).toHaveBeenCalledWith({ debug: true, silent: true }, expect.any(Object));
   });
 
-  test('should report conflict on negated option flag', () => {
+  it('should report conflict on negated option flag', () => {
     const { program } = makeProgram();
 
     program
@@ -111,7 +112,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '--red' cannot be used with option '-N, --no-color'");
   });
 
-  test('should report conflict on negated option env variable', () => {
+  it('should report conflict on negated option env variable', () => {
     const { program } = makeProgram();
 
     process.env.NO_COLOR = true;
@@ -127,7 +128,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '--red' cannot be used with environment variable 'NO_COLOR'");
   });
 
-  test('should report correct error for shorthand negated option', () => {
+  it('should report correct error for shorthand negated option', () => {
     const { program } = makeProgram();
 
     program
@@ -140,7 +141,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '-N, --no-color' cannot be used with option '--red'");
   });
 
-  test('should report correct error for positive option when negated is configured', () => {
+  it('should report correct error for positive option when negated is configured', () => {
     const { program } = makeProgram();
 
     program
@@ -154,7 +155,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '--dual' cannot be used with option '--red'");
   });
 
-  test('should report correct error for negated option when positive is configured', () => {
+  it('should report correct error for negated option when positive is configured', () => {
     const { program } = makeProgram();
 
     program
@@ -168,7 +169,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '--no-dual' cannot be used with option '--red'");
   });
 
-  test('should report correct error for positive env variable when negated is configured', () => {
+  it('should report correct error for positive env variable when negated is configured', () => {
     const { program } = makeProgram();
 
     program
@@ -183,7 +184,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: environment variable 'DUAL' cannot be used with option '--red'");
   });
 
-  test('should report correct error for negated env variable when positive is configured', () => {
+  it('should report correct error for negated env variable when positive is configured', () => {
     const { program } = makeProgram();
 
     program
@@ -198,7 +199,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: environment variable 'NO_DUAL' cannot be used with option '--red'");
   });
 
-  test('should report correct error for positive option with string value when negated is configured', () => {
+  it('should report correct error for positive option with string value when negated is configured', () => {
     const { program } = makeProgram();
 
     program
@@ -212,7 +213,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '--dual2 <str>' cannot be used with option '--red'");
   });
 
-  test('should report correct error for negated option with preset when negated is configured', () => {
+  it('should report correct error for negated option with preset when negated is configured', () => {
     const { program } = makeProgram();
 
     program
@@ -226,7 +227,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '--no-dual2' cannot be used with option '--red'");
   });
 
-  test('should not throw error when conflicts is invoked with a single string that includes another option', () => {
+  it('should not throw error when conflicts is invoked with a single string that includes another option', () => {
     const { program } = makeProgram();
 
     const actionMock = jest.fn();
@@ -243,7 +244,7 @@ describe('command with conflicting options', () => {
     expect(actionMock).toHaveBeenCalledWith({ a: true, b: true }, expect.any(Object));
   });
 
-  test('should throw error when conflicts is invoked with a single string that equals another option', () => {
+  it('should throw error when conflicts is invoked with a single string that equals another option', () => {
     const { program } = makeProgram();
 
     program
@@ -256,7 +257,7 @@ describe('command with conflicting options', () => {
     }).toThrow("error: option '--b' cannot be used with option '--a'");
   });
 
-  test('when conflict on program calling action subcommand then throw conflict', () => {
+  it('when conflict on program calling action subcommand then throw conflict', () => {
     const { program } = makeProgram();
     let exception;
 
@@ -273,7 +274,7 @@ describe('command with conflicting options', () => {
     expect(exception.code).toBe('commander.conflictingOption');
   });
 
-  test('when conflict on program calling action subcommand with help then show help', () => {
+  it('when conflict on program calling action subcommand with help then show help', () => {
     const { program } = makeProgram();
     let exception;
 
@@ -290,7 +291,7 @@ describe('command with conflicting options', () => {
     expect(exception.code).toBe('commander.helpDisplayed');
   });
 
-  test('when conflict on program calling external subcommand then throw conflict', () => {
+  it('when conflict on program calling external subcommand then throw conflict', () => {
     const { program } = makeProgram();
     let exception;
 

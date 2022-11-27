@@ -12,7 +12,7 @@ function makeSystemError(code) {
   return err;
 }
 
-test('when subcommand executable missing (ENOENT) then throw custom message', () => {
+it('when subcommand executable missing (ENOENT) then throw custom message', () => {
   // If the command is not found, we show a custom error with an explanation and offer
   // some advice for possible fixes.
   const mockProcess = new EventEmitter();
@@ -27,7 +27,7 @@ test('when subcommand executable missing (ENOENT) then throw custom message', ()
   spawnSpy.mockRestore();
 });
 
-test('when subcommand executable not executable (EACCES) then throw custom message', () => {
+it('when subcommand executable not executable (EACCES) then throw custom message', () => {
   // Side note: this error does not actually happen on Windows! But we can still simulate the behaviour on other platforms.
   const mockProcess = new EventEmitter();
   const spawnSpy = jest.spyOn(childProcess, 'spawn').mockImplementation(() => { return mockProcess; });
@@ -41,7 +41,7 @@ test('when subcommand executable not executable (EACCES) then throw custom messa
   spawnSpy.mockRestore();
 });
 
-test('when subcommand executable fails with other error  and exitOverride then return in custom wrapper', () => {
+it('when subcommand executable fails with other error  and exitOverride then return in custom wrapper', () => {
   // The existing behaviour is to just silently fail for unexpected errors, as it is happening
   // asynchronously in spawned process and client can not catch errors.
   const mockProcess = new EventEmitter();
@@ -63,7 +63,7 @@ test('when subcommand executable fails with other error  and exitOverride then r
   spawnSpy.mockRestore();
 });
 
-test('when subcommand executable fails with other error then exit', () => {
+it('when subcommand executable fails with other error then exit', () => {
   // The existing behaviour is to just silently fail for unexpected errors, as it is happening
   // asynchronously in spawned process and client can not catch errors.
   const mockProcess = new EventEmitter();

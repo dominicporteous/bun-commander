@@ -1,8 +1,11 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import { throws } from 'node:assert'
+import commander from '../index.js';
+import sinon from 'sinon'
 
 // option with required value, no default
 describe('option with required value, no default', () => {
-  test('when option not specified then value is undefined', () => {
+  it('when option not specified then value is undefined', () => {
     const program = new commander.Command();
     program
       .option('--cheese <type>', 'cheese type');
@@ -10,7 +13,7 @@ describe('option with required value, no default', () => {
     expect(program.opts().cheese).toBeUndefined();
   });
 
-  test('when option specified then value is as specified', () => {
+  it('when option specified then value is as specified', () => {
     const program = new commander.Command();
     program
       .option('--cheese <type>', 'cheese type');
@@ -19,9 +22,9 @@ describe('option with required value, no default', () => {
     expect(program.opts().cheese).toBe(cheeseType);
   });
 
-  test('when option value not specified then error', () => {
+  it('when option value not specified then error', () => {
     // Arrange. Mock error routine to allow interception.
-    const mockOptionMissingArgument = jest.fn(() => {
+    const mockOptionMissingArgument = sinon.spy(() => {
       throw new Error('optionMissingArgument');
     });
     const program = new commander.Command();
@@ -30,18 +33,18 @@ describe('option with required value, no default', () => {
       .option('--cheese <type>', 'cheese type');
 
     // Act. The throw is due to the above mock, and not default behaviour.
-    expect(() => {
+    throws(() => {
       program.parse(['node', 'test', '--cheese']);
-    }).toThrow();
+    })
 
     // Assert
-    expect(mockOptionMissingArgument).toHaveBeenCalled();
+    expect(mockOptionMissingArgument.called).toBe(true);
   });
 });
 
 // option with required value, with default
 describe('option with required value, with default', () => {
-  test('when option not specified then value is default', () => {
+  it('when option not specified then value is default', () => {
     const defaultValue = 'default';
     const program = new commander.Command();
     program
@@ -50,7 +53,7 @@ describe('option with required value, with default', () => {
     expect(program.opts().cheese).toBe(defaultValue);
   });
 
-  test('when option specified then value is as specified', () => {
+  it('when option specified then value is as specified', () => {
     const defaultValue = 'default';
     const program = new commander.Command();
     program
@@ -60,9 +63,9 @@ describe('option with required value, with default', () => {
     expect(program.opts().cheese).toBe(cheeseType);
   });
 
-  test('when option value not specified then error', () => {
+  it('when option value not specified then error', () => {
     // Arrange. Mock error routine to allow interception.
-    const mockOptionMissingArgument = jest.fn(() => {
+    const mockOptionMissingArgument = sinon.spy(() => {
       throw new Error('optionMissingArgument');
     });
     const defaultValue = 'default';
@@ -72,11 +75,11 @@ describe('option with required value, with default', () => {
       .option('--cheese <type>', 'cheese type', defaultValue);
 
     // Act. The throw is due to the above mock, and not default behaviour.
-    expect(() => {
+    throws(() => {
       program.parse(['node', 'test', '--cheese']);
-    }).toThrow();
+    })
 
     // Assert
-    expect(mockOptionMissingArgument).toHaveBeenCalled();
+    expect(mockOptionMissingArgument.called).toBe(true);
   });
 });

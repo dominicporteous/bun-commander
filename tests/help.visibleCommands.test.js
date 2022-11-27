@@ -1,16 +1,17 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // These are tests of the Help class, not of the Command help.
 // There is some overlap with the higher level Command tests (which predate Help).
 
 describe('visibleCommands', () => {
-  test('when no subcommands then empty array', () => {
+  it('when no subcommands then empty array', () => {
     const program = new commander.Command();
     const helper = new commander.Help();
     expect(helper.visibleCommands(program)).toEqual([]);
   });
 
-  test('when add command then visible (with help)', () => {
+  it('when add command then visible (with help)', () => {
     const program = new commander.Command();
     program
       .command('sub');
@@ -19,7 +20,7 @@ describe('visibleCommands', () => {
     expect(visibleCommandNames).toEqual(['sub', 'help']);
   });
 
-  test('when commands hidden then not visible', () => {
+  it('when commands hidden then not visible', () => {
     const program = new commander.Command();
     program
       .command('visible', 'desc')

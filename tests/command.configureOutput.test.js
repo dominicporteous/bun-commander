@@ -1,6 +1,7 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when default writeErr() then error on stderr', () => {
+it('when default writeErr() then error on stderr', () => {
   const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
   const program = new commander.Command();
   program.exitOverride();
@@ -14,7 +15,7 @@ test('when default writeErr() then error on stderr', () => {
   writeSpy.mockRestore();
 });
 
-test('when custom writeErr() then error on custom output', () => {
+it('when custom writeErr() then error on custom output', () => {
   const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
   const customWrite = jest.fn();
   const program = new commander.Command();
@@ -32,7 +33,7 @@ test('when custom writeErr() then error on custom output', () => {
   writeSpy.mockRestore();
 });
 
-test('when default write() then version on stdout', () => {
+it('when default write() then version on stdout', () => {
   const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
   const program = new commander.Command();
   program
@@ -47,7 +48,7 @@ test('when default write() then version on stdout', () => {
   writeSpy.mockRestore();
 });
 
-test('when custom write() then version on custom output', () => {
+it('when custom write() then version on custom output', () => {
   const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
   const customWrite = jest.fn();
   const program = new commander.Command();
@@ -65,7 +66,7 @@ test('when custom write() then version on custom output', () => {
   writeSpy.mockRestore();
 });
 
-test('when default write() then help on stdout', () => {
+it('when default write() then help on stdout', () => {
   const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
   const program = new commander.Command();
   program.outputHelp();
@@ -74,7 +75,7 @@ test('when default write() then help on stdout', () => {
   writeSpy.mockRestore();
 });
 
-test('when custom write() then help error on custom output', () => {
+it('when custom write() then help error on custom output', () => {
   const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
   const customWrite = jest.fn();
   const program = new commander.Command();
@@ -86,7 +87,7 @@ test('when custom write() then help error on custom output', () => {
   writeSpy.mockRestore();
 });
 
-test('when default writeErr then help error on stderr', () => {
+it('when default writeErr then help error on stderr', () => {
   const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
   const program = new commander.Command();
   program.outputHelp({ error: true });
@@ -95,7 +96,7 @@ test('when default writeErr then help error on stderr', () => {
   writeSpy.mockRestore();
 });
 
-test('when custom writeErr then help error on custom output', () => {
+it('when custom writeErr then help error on custom output', () => {
   const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
   const customWrite = jest.fn();
   const program = new commander.Command();
@@ -107,7 +108,7 @@ test('when custom writeErr then help error on custom output', () => {
   writeSpy.mockRestore();
 });
 
-test('when default getOutHelpWidth then help helpWidth from stdout', () => {
+it('when default getOutHelpWidth then help helpWidth from stdout', () => {
   const expectedColumns = 123;
   const holdIsTTY = process.stdout.isTTY;
   const holdColumns = process.stdout.columns;
@@ -131,7 +132,7 @@ test('when default getOutHelpWidth then help helpWidth from stdout', () => {
   process.stdout.isTTY = holdIsTTY;
 });
 
-test('when custom getOutHelpWidth then help helpWidth custom', () => {
+it('when custom getOutHelpWidth then help helpWidth custom', () => {
   const expectedColumns = 123;
   let helpWidth;
 
@@ -150,7 +151,7 @@ test('when custom getOutHelpWidth then help helpWidth custom', () => {
   expect(helpWidth).toBe(expectedColumns);
 });
 
-test('when default getErrHelpWidth then help error helpWidth from stderr', () => {
+it('when default getErrHelpWidth then help error helpWidth from stderr', () => {
   const expectedColumns = 123;
   const holdIsTTY = process.stderr.isTTY;
   const holdColumns = process.stderr.columns;
@@ -173,7 +174,7 @@ test('when default getErrHelpWidth then help error helpWidth from stderr', () =>
   process.stderr.columns = holdColumns;
 });
 
-test('when custom getErrHelpWidth then help error helpWidth custom', () => {
+it('when custom getErrHelpWidth then help error helpWidth custom', () => {
   const expectedColumns = 123;
   let helpWidth;
 
@@ -192,7 +193,7 @@ test('when custom getErrHelpWidth then help error helpWidth custom', () => {
   expect(helpWidth).toBe(expectedColumns);
 });
 
-test('when custom getOutHelpWidth and configureHelp:helpWidth then help helpWidth from configureHelp', () => {
+it('when custom getOutHelpWidth and configureHelp:helpWidth then help helpWidth from configureHelp', () => {
   const expectedColumns = 123;
   let helpWidth;
 
@@ -212,7 +213,7 @@ test('when custom getOutHelpWidth and configureHelp:helpWidth then help helpWidt
   expect(helpWidth).toBe(expectedColumns);
 });
 
-test('when custom getErrHelpWidth and configureHelp:helpWidth then help error helpWidth from configureHelp', () => {
+it('when custom getErrHelpWidth and configureHelp:helpWidth then help error helpWidth from configureHelp', () => {
   const expectedColumns = 123;
   let helpWidth;
 
@@ -232,7 +233,7 @@ test('when custom getErrHelpWidth and configureHelp:helpWidth then help error he
   expect(helpWidth).toBe(expectedColumns);
 });
 
-test('when set configureOutput then get configureOutput', () => {
+it('when set configureOutput then get configureOutput', () => {
   const outputOptions = {
     writeOut: jest.fn(),
     writeErr: jest.fn(),
@@ -245,7 +246,7 @@ test('when set configureOutput then get configureOutput', () => {
   expect(program.configureOutput()).toEqual(outputOptions);
 });
 
-test('when custom outputErr and error then outputErr called', () => {
+it('when custom outputErr and error then outputErr called', () => {
   const outputError = jest.fn();
   const program = new commander.Command();
   program
@@ -260,7 +261,7 @@ test('when custom outputErr and error then outputErr called', () => {
   expect(outputError).toHaveBeenCalledWith("error: unknown option '--unknownOption'\n", program._outputConfiguration.writeErr);
 });
 
-test('when custom outputErr and writeErr and error then outputErr passed writeErr', () => {
+it('when custom outputErr and writeErr and error then outputErr passed writeErr', () => {
   const writeErr = () => jest.fn();
   const outputError = jest.fn();
   const program = new commander.Command();

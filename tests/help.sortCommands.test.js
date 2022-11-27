@@ -1,10 +1,11 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // These are tests of the Help class, not of the Command help.
 // There is some overlap with the higher level Command tests (which predate Help).
 
 describe('sortSubcommands', () => {
-  test('when unsorted then commands in order added', () => {
+  it('when unsorted then commands in order added', () => {
     const program = new commander.Command();
     program
       .command('ccc', 'desc')
@@ -15,7 +16,7 @@ describe('sortSubcommands', () => {
     expect(visibleCommandNames).toEqual(['ccc', 'aaa', 'bbb', 'help']);
   });
 
-  test('when sortSubcommands:true then commands sorted', () => {
+  it('when sortSubcommands:true then commands sorted', () => {
     const program = new commander.Command();
     program
       .configureHelp({ sortSubcommands: true })

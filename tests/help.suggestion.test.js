@@ -1,4 +1,5 @@
-const { Command, Option } = require('../');
+import { describe, expect, it } from "bun:test";
+import { Command, Option } from '../index.js';
 
 // Note: setting up shared command configuration in getSuggestion,
 // and looking for possible subcommand 'sub'.
@@ -26,7 +27,7 @@ function getSuggestion(program, arg) {
   return match ? match[2] : null;
 }
 
-test.each([
+for (const [arg, commandNames, expected] of [
   ['yyy', ['zzz'], null, 'none similar'],
   ['a', ['b'], null, 'one edit away but not similar'],
   ['a', ['ab'], 'ab', 'one edit away'],
@@ -41,14 +42,18 @@ test.each([
   ['123456', ['1234567890'], null, '4 edits is too far'],
   ['xat', ['rat', 'cat', 'bat'], 'bat, cat, rat', 'sorted possibles'],
   ['cart', ['camb', 'cant', 'bard'], 'cant', 'only closest of different edit distances']
-])('when cli of %s and commands %j then suggest %s because %s', (arg, commandNames, expected) => {
-  const program = new Command();
-  commandNames.forEach(name => { program.command(name); });
-  const suggestion = getSuggestion(program, arg);
-  expect(suggestion).toBe(expected);
-});
+]){
+  
+  it(`when cli of ${arg} and commands ${commandNames} then suggest ${expected} because ${expected}`, () => {
+    const program = new Command();
+    commandNames.forEach(name => { program.command(name); });
+    const suggestion = getSuggestion(program, arg);
+    expect(suggestion).toBe(expected);
+  });
 
-test('when similar alias then suggest alias', () => {
+}
+
+it('when similar alias then suggest alias', () => {
   const program = new Command();
   program.command('xyz')
     .alias('car');
@@ -56,7 +61,7 @@ test('when similar alias then suggest alias', () => {
   expect(suggestion).toBe('car');
 });
 
-test('when similar hidden alias then not suggested', () => {
+it('when similar hidden alias then not suggested', () => {
   const program = new Command();
   program.command('xyz')
     .alias('visible')
@@ -65,7 +70,7 @@ test('when similar hidden alias then not suggested', () => {
   expect(suggestion).toBe(null);
 });
 
-test('when similar command and alias then suggest both', () => {
+it('when similar command and alias then suggest both', () => {
   const program = new Command();
   program.command('aaaaa')
     .alias('cat');
@@ -75,14 +80,14 @@ test('when similar command and alias then suggest both', () => {
   expect(suggestion).toBe('bat, cat');
 });
 
-test('when implicit help command then help is candidate for suggestion', () => {
+it('when implicit help command then help is candidate for suggestion', () => {
   const program = new Command();
   program.command('sub');
   const suggestion = getSuggestion(program, 'hepl');
   expect(suggestion).toBe('help');
 });
 
-test('when help command disabled then not candidate for suggestion', () => {
+it('when help command disabled then not candidate for suggestion', () => {
   const program = new Command();
   program.addHelpCommand(false);
   program.command('sub');
@@ -90,27 +95,27 @@ test('when help command disabled then not candidate for suggestion', () => {
   expect(suggestion).toBe(null);
 });
 
-test('when default help option then --help is candidate for suggestion', () => {
+it('when default help option then --help is candidate for suggestion', () => {
   const program = new Command();
   const suggestion = getSuggestion(program, '--hepl');
   expect(suggestion).toBe('--help');
 });
 
-test('when custom help option then --custom-help is candidate for suggestion', () => {
+it('when custom help option then --custom-help is candidate for suggestion', () => {
   const program = new Command();
   program.helpOption('-H, --custom-help');
   const suggestion = getSuggestion(program, '--custom-hepl');
   expect(suggestion).toBe('--custom-help');
 });
 
-test('when help option disabled then not candidate for suggestion', () => {
+it('when help option disabled then not candidate for suggestion', () => {
   const program = new Command();
   program.helpOption(false);
   const suggestion = getSuggestion(program, '--hepl');
   expect(suggestion).toBe(null);
 });
 
-test('when command:* listener and unknown command then no suggestion', () => {
+it('when command:* listener and unknown command then no suggestion', () => {
   // Because one use for command:* was to handle unknown commands.
   // Listener actually stops error being thrown, but we just care about affect on suggestion in this test.
   const program = new Command();
@@ -122,7 +127,7 @@ test('when command:* listener and unknown command then no suggestion', () => {
 
 // Easy to just run same tests as for commands with cut and paste!
 // Note: length calculations disregard the leading --
-test.each([
+for (const [arg, commandNames, expected] of [
   ['--yyy', ['--zzz'], null, 'none similar'],
   ['--a', ['--b'], null, 'one edit away but not similar'],
   ['--a', ['--ab'], '--ab', 'one edit away'],
@@ -137,14 +142,18 @@ test.each([
   ['--123456', ['--1234567890'], null, '4 edits is too far'],
   ['--xat', ['--rat', '--cat', '--bat'], '--bat, --cat, --rat', 'sorted possibles'],
   ['--cart', ['--camb', '--cant', '--bard'], '--cant', 'only closest of different edit distances']
-])('when cli of %s and options %j then suggest %s because %s', (arg, commandNames, expected) => {
-  const program = new Command();
-  commandNames.forEach(name => { program.option(name); });
-  const suggestion = getSuggestion(program, arg);
-  expect(suggestion).toBe(expected);
-});
+]){
+  
+  it(`when cli of ${arg} and options ${commandNames} then suggest ${expected} because ${expected}`, () => {
+    const program = new Command();
+    commandNames.forEach(name => { program.option(name); });
+    const suggestion = getSuggestion(program, arg);
+    expect(suggestion).toBe(expected);
+  });
 
-test('when no options then no suggestion', () => {
+}
+
+it('when no options then no suggestion', () => {
   // Checking nothing blows up as much as no suggestion!
   const program = new Command();
   program
@@ -153,7 +162,7 @@ test('when no options then no suggestion', () => {
   expect(suggestion).toBe(null);
 });
 
-test('when subcommand option then candidate for subcommand option suggestion', () => {
+it('when subcommand option then candidate for subcommand option suggestion', () => {
   const program = new Command();
   program.command('sub')
     .option('-l,--local');
@@ -161,7 +170,7 @@ test('when subcommand option then candidate for subcommand option suggestion', (
   expect(suggestion).toBe('--local');
 });
 
-test('when global option then candidate for subcommand option suggestion', () => {
+it('when global option then candidate for subcommand option suggestion', () => {
   const program = new Command();
   program.option('-g, --global');
   program.command('sub');
@@ -169,7 +178,7 @@ test('when global option then candidate for subcommand option suggestion', () =>
   expect(suggestion).toBe('--global');
 });
 
-test('when global option but positionalOptions then not candidate for subcommand suggestion', () => {
+it('when global option but positionalOptions then not candidate for subcommand suggestion', () => {
   const program = new Command();
   program
     .enablePositionalOptions();
@@ -179,7 +188,7 @@ test('when global option but positionalOptions then not candidate for subcommand
   expect(suggestion).toBe(null);
 });
 
-test('when global and local options then both candidates', () => {
+it('when global and local options then both candidates', () => {
   const program = new Command();
   program.option('--cat');
   program.command('sub')
@@ -188,21 +197,21 @@ test('when global and local options then both candidates', () => {
   expect(suggestion).toBe('--cat, --rat');
 });
 
-test('when command hidden then not suggested as candidate', () => {
+it('when command hidden then not suggested as candidate', () => {
   const program = new Command();
   program.command('secret', { hidden: true });
   const suggestion = getSuggestion(program, 'secrt');
   expect(suggestion).toBe(null);
 });
 
-test('when option hidden then not suggested as candidate', () => {
+it('when option hidden then not suggested as candidate', () => {
   const program = new Command();
   program.addOption(new Option('--secret').hideHelp());
   const suggestion = getSuggestion(program, '--secrt');
   expect(suggestion).toBe(null);
 });
 
-test('when may be duplicate identical candidates then only return one', () => {
+it('when may be duplicate identical candidates then only return one', () => {
   const program = new Command();
   program.command('sub');
   const suggestion = getSuggestion(program, ['sub', '--hepl']);

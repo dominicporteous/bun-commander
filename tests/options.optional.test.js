@@ -1,8 +1,9 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // option with optional value, no default
 describe('option with optional value, no default', () => {
-  test('when option not specified then value is undefined', () => {
+  it('when option not specified then value is undefined', () => {
     const program = new commander.Command();
     program
       .option('--cheese [type]', 'cheese type');
@@ -10,7 +11,7 @@ describe('option with optional value, no default', () => {
     expect(program.opts().cheese).toBeUndefined();
   });
 
-  test('when option specified then value is as specified', () => {
+  it('when option specified then value is as specified', () => {
     const program = new commander.Command();
     program
       .option('--cheese [type]', 'cheese type');
@@ -19,7 +20,7 @@ describe('option with optional value, no default', () => {
     expect(program.opts().cheese).toBe(cheeseType);
   });
 
-  test('when option specified without value then value is true', () => {
+  it('when option specified without value then value is true', () => {
     const program = new commander.Command();
     program
       .option('--cheese [type]', 'cheese type');
@@ -27,7 +28,7 @@ describe('option with optional value, no default', () => {
     expect(program.opts().cheese).toBe(true);
   });
 
-  test('when option specified without value and following option then value is true', () => {
+  it('when option specified without value and following option then value is true', () => {
     // optional options do not eat values with dashes
     const program = new commander.Command();
     program
@@ -40,7 +41,7 @@ describe('option with optional value, no default', () => {
 
 // option with optional value, with default
 describe('option with optional value, with default', () => {
-  test('when option not specified then value is default', () => {
+  it('when option not specified then value is default', () => {
     const defaultValue = 'default';
     const program = new commander.Command();
     program
@@ -49,7 +50,7 @@ describe('option with optional value, with default', () => {
     expect(program.opts().cheese).toBe(defaultValue);
   });
 
-  test('when option specified then value is as specified', () => {
+  it('when option specified then value is as specified', () => {
     const defaultValue = 'default';
     const program = new commander.Command();
     program
@@ -59,7 +60,7 @@ describe('option with optional value, with default', () => {
     expect(program.opts().cheese).toBe(cheeseType);
   });
 
-  test('when option specified without value then value is true', () => {
+  it('when option specified without value then value is true', () => {
     const defaultValue = 'default';
     const program = new commander.Command();
     program
@@ -68,7 +69,7 @@ describe('option with optional value, with default', () => {
     expect(program.opts().cheese).toBe(true);
   });
 
-  test('when option specified without value and preset then value is preset', () => {
+  it('when option specified without value and preset then value is preset', () => {
     const program = new commander.Command();
     program
       .addOption(new commander.Option('--cheese [type]').preset('preset'));

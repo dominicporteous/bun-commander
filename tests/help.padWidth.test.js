@@ -1,10 +1,11 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // These are tests of the Help class, not of the Command help.
 // There is some overlap with the higher level Command tests (which predate Help).
 
 describe('padWidth', () => {
-  test('when argument term longest return argument length', () => {
+  it('when argument term longest return argument length', () => {
     const longestThing = 'veryLongThingBiggerThanOthers';
     const program = new commander.Command();
     program
@@ -16,7 +17,7 @@ describe('padWidth', () => {
     expect(helper.padWidth(program, helper)).toEqual(longestThing.length);
   });
 
-  test('when option term longest return option length', () => {
+  it('when option term longest return option length', () => {
     const longestThing = '--very-long-thing-bigger-than-others';
     const program = new commander.Command();
     program
@@ -28,7 +29,7 @@ describe('padWidth', () => {
     expect(helper.padWidth(program, helper)).toEqual(longestThing.length);
   });
 
-  test('when command term longest return command length', () => {
+  it('when command term longest return command length', () => {
     const longestThing = 'very-long-thing-bigger-than-others';
     const program = new commander.Command();
     program

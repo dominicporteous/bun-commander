@@ -54,7 +54,7 @@ describe('search for subcommand', () => {
       existsSpy.mockImplementation(() => false);
     });
 
-    test('when no script arg or executableDir then no search for local file', () => {
+    it('when no script arg or executableDir then no search for local file', () => {
       const program = new commander.Command();
       program.name('pm');
       program.command('sub', 'executable description');
@@ -63,7 +63,7 @@ describe('search for subcommand', () => {
       expect(existsSpy).not.toHaveBeenCalled();
     });
 
-    test('when script arg then search for local files', () => {
+    it('when script arg then search for local files', () => {
       const program = new commander.Command();
       program.name('pm');
       program.command('sub', 'executable description');
@@ -72,7 +72,7 @@ describe('search for subcommand', () => {
       expect(existsSpy).toHaveBeenCalled();
     });
 
-    test('when executableDir then search for local files)', () => {
+    it('when executableDir then search for local files)', () => {
       const program = new commander.Command();
       program.name('pm');
       program.executableDir(__dirname);
@@ -89,7 +89,7 @@ describe('search for subcommand', () => {
       existsSpy.mockImplementation(() => false);
     });
 
-    test('when named pm and no script arg or executableDir then spawn pm-sub as command', () => {
+    it('when named pm and no script arg or executableDir then spawn pm-sub as command', () => {
       const program = new commander.Command();
       program.name('pm');
       program.command('sub', 'executable description');
@@ -98,7 +98,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnCommand(spawnSpy)).toEqual('pm-sub');
     });
 
-    test('when named pm and script arg then still spawn pm-sub as command', () => {
+    it('when named pm and script arg then still spawn pm-sub as command', () => {
       const program = new commander.Command();
       program.name('pm');
       program.command('sub', 'executable description');
@@ -107,7 +107,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnCommand(spawnSpy)).toEqual('pm-sub');
     });
 
-    test('when no name and script arg then spawn script-sub as command', () => {
+    it('when no name and script arg then spawn script-sub as command', () => {
       const program = new commander.Command();
       program.command('sub', 'executable description');
       program.parse(['node', 'script.js', 'sub']);
@@ -115,7 +115,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnCommand(spawnSpy)).toEqual('script-sub');
     });
 
-    test('when named pm and script arg and executableFile then spawn executableFile as command', () => {
+    it('when named pm and script arg and executableFile then spawn executableFile as command', () => {
       const program = new commander.Command();
       program.command('sub', 'executable description', { executableFile: 'myExecutable' });
       program.parse(['node', 'script.js', 'sub']);
@@ -125,7 +125,7 @@ describe('search for subcommand', () => {
   });
 
   describe('subcommand command name with matching local file', () => {
-    test('when construct with name pm and script arg then spawn local pm-sub.js', () => {
+    it('when construct with name pm and script arg then spawn local pm-sub.js', () => {
       const program = new commander.Command('pm');
       program.command('sub', 'executable description');
 
@@ -136,7 +136,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([localPath]);
     });
 
-    test('when name pm and script arg then spawn local pm-sub.js', () => {
+    it('when name pm and script arg then spawn local pm-sub.js', () => {
       const program = new commander.Command();
       program.name('pm');
       program.command('sub', 'executable description');
@@ -148,7 +148,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([localPath]);
     });
 
-    test('when script arg then spawn local script-sub.js', () => {
+    it('when script arg then spawn local script-sub.js', () => {
       const program = new commander.Command();
       program.command('sub', 'executable description');
 
@@ -159,7 +159,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([localPath]);
     });
 
-    test('when name pm and script arg and only script-sub.js then fallback to spawn local script-sub.js', () => {
+    it('when name pm and script arg and only script-sub.js then fallback to spawn local script-sub.js', () => {
       const program = new commander.Command();
       program.name('pm');
       program.command('sub', 'executable description');
@@ -172,7 +172,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([localPath]);
     });
 
-    test('when name pm and executableDir then spawn local pm-sub.js', () => {
+    it('when name pm and executableDir then spawn local pm-sub.js', () => {
       const program = new commander.Command();
       program.name('pm');
       program.command('sub', 'executable description');
@@ -186,7 +186,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([localPath]);
     });
 
-    test('when script arg and relative executableDir then spawn relative script-sub.js', () => {
+    it('when script arg and relative executableDir then spawn relative script-sub.js', () => {
       const program = new commander.Command();
       program.command('sub', 'executable description');
 
@@ -199,7 +199,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([localPath]);
     });
 
-    test('when script arg and absolute executableDir then spawn absolute script-sub.js', () => {
+    it('when script arg and absolute executableDir then spawn absolute script-sub.js', () => {
       const program = new commander.Command();
       program.command('sub', 'executable description');
 
@@ -212,7 +212,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([localPath]);
     });
 
-    test('when script arg is link and and link-sub relative to link target then spawn local link-sub', () => {
+    it('when script arg is link and and link-sub relative to link target then spawn local link-sub', () => {
       const program = new commander.Command();
       program.command('sub', 'executable description');
 
@@ -229,7 +229,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([scriptSubPath]);
     });
 
-    test('when name pm and script arg and relative executableFile then spawn local exec.js', () => {
+    it('when name pm and script arg and relative executableFile then spawn local exec.js', () => {
       const program = new commander.Command('pm');
       const localPath = path.join('relative', 'exec.js');
       const absolutePath = path.resolve(gLocalDirectory, localPath);
@@ -241,7 +241,7 @@ describe('search for subcommand', () => {
       expect(extractMockSpawnArgs(spawnSpy)).toEqual([absolutePath]);
     });
 
-    test('when name pm and script arg and absolute executableFile then spawn local exec.js', () => {
+    it('when name pm and script arg and absolute executableFile then spawn local exec.js', () => {
       const program = new commander.Command('pm');
       const localPath = path.resolve(gLocalDirectory, 'absolute', 'exec.js');
       program.command('sub', 'executable description', { executableFile: localPath });
@@ -254,7 +254,7 @@ describe('search for subcommand', () => {
   });
 
   describe('search for local file', () => {
-    test('when script arg then search for local script-sub.js, .ts, .tsx, .mpjs, .cjs', () => {
+    it('when script arg then search for local script-sub.js, .ts, .tsx, .mpjs, .cjs', () => {
       existsSpy.mockImplementation((path) => false);
       const program = new commander.Command();
       program.command('sub', 'executable description');

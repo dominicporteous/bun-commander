@@ -1,9 +1,10 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Testing default value and custom processing behaviours.
 // Some double assertions in tests to check action argument and .processedArg
 
-test('when argument not specified then callback not called', () => {
+it('when argument not specified then callback not called', () => {
   const mockCoercion = jest.fn();
   const program = new commander.Command();
   program
@@ -13,7 +14,7 @@ test('when argument not specified then callback not called', () => {
   expect(mockCoercion).not.toHaveBeenCalled();
 });
 
-test('when argument not specified then action argument undefined', () => {
+it('when argument not specified then action argument undefined', () => {
   let actionValue = 'foo';
   const program = new commander.Command();
   program
@@ -25,7 +26,7 @@ test('when argument not specified then action argument undefined', () => {
   expect(actionValue).toBeUndefined();
 });
 
-test('when custom with starting value and argument not specified then callback not called', () => {
+it('when custom with starting value and argument not specified then callback not called', () => {
   const mockCoercion = jest.fn();
   const program = new commander.Command();
   program
@@ -35,7 +36,7 @@ test('when custom with starting value and argument not specified then callback n
   expect(mockCoercion).not.toHaveBeenCalled();
 });
 
-test('when custom with starting value and argument not specified with action handler then action argument is starting value', () => {
+it('when custom with starting value and argument not specified with action handler then action argument is starting value', () => {
   const startingValue = 1;
   let actionValue;
   const program = new commander.Command();
@@ -49,7 +50,7 @@ test('when custom with starting value and argument not specified with action han
   expect(program.processedArgs).toEqual([startingValue]);
 });
 
-test('when custom with starting value and argument not specified without action handler then .processedArgs has starting value', () => {
+it('when custom with starting value and argument not specified without action handler then .processedArgs has starting value', () => {
   const startingValue = 1;
   const program = new commander.Command();
   program
@@ -58,7 +59,7 @@ test('when custom with starting value and argument not specified without action 
   expect(program.processedArgs).toEqual([startingValue]);
 });
 
-test('when default value is defined (without custom processing) and argument not specified with action handler then action argument is default value', () => {
+it('when default value is defined (without custom processing) and argument not specified with action handler then action argument is default value', () => {
   const defaultValue = 1;
   let actionValue;
   const program = new commander.Command();
@@ -72,7 +73,7 @@ test('when default value is defined (without custom processing) and argument not
   expect(program.processedArgs).toEqual([defaultValue]);
 });
 
-test('when default value is defined (without custom processing) and argument not specified without action handler then .processedArgs is default value', () => {
+it('when default value is defined (without custom processing) and argument not specified without action handler then .processedArgs is default value', () => {
   const defaultValue = 1;
   const program = new commander.Command();
   program
@@ -81,7 +82,7 @@ test('when default value is defined (without custom processing) and argument not
   expect(program.processedArgs).toEqual([defaultValue]);
 });
 
-test('when argument specified then callback called with value', () => {
+it('when argument specified then callback called with value', () => {
   const mockCoercion = jest.fn();
   const value = '1';
   const program = new commander.Command();
@@ -92,7 +93,7 @@ test('when argument specified then callback called with value', () => {
   expect(mockCoercion).toHaveBeenCalledWith(value, undefined);
 });
 
-test('when argument specified with action handler then action value is as returned from callback', () => {
+it('when argument specified with action handler then action value is as returned from callback', () => {
   const callbackResult = 2;
   let actionValue;
   const program = new commander.Command();
@@ -108,7 +109,7 @@ test('when argument specified with action handler then action value is as return
   expect(program.processedArgs).toEqual([callbackResult]);
 });
 
-test('when argument specified without action handler then .processedArgs is as returned from callback', () => {
+it('when argument specified without action handler then .processedArgs is as returned from callback', () => {
   const callbackResult = 2;
   const program = new commander.Command();
   program
@@ -119,7 +120,7 @@ test('when argument specified without action handler then .processedArgs is as r
   expect(program.processedArgs).toEqual([callbackResult]);
 });
 
-test('when argument specified then program.args has original rather than custom', () => {
+it('when argument specified then program.args has original rather than custom', () => {
   // This is as intended, so check behaviour.
   const callbackResult = 2;
   const program = new commander.Command();
@@ -132,7 +133,7 @@ test('when argument specified then program.args has original rather than custom'
   expect(program.args).toEqual(['alpha']);
 });
 
-test('when custom with starting value and argument specified then callback called with value and starting value', () => {
+it('when custom with starting value and argument specified then callback called with value and starting value', () => {
   const mockCoercion = jest.fn();
   const startingValue = 1;
   const value = '2';
@@ -143,7 +144,7 @@ test('when custom with starting value and argument specified then callback calle
   expect(mockCoercion).toHaveBeenCalledWith(value, startingValue);
 });
 
-test('when variadic argument specified multiple times then callback called with value and previousValue', () => {
+it('when variadic argument specified multiple times then callback called with value and previousValue', () => {
   const mockCoercion = jest.fn().mockImplementation(() => {
     return 'callback';
   });
@@ -157,7 +158,7 @@ test('when variadic argument specified multiple times then callback called with 
   expect(mockCoercion).toHaveBeenNthCalledWith(2, '2', 'callback');
 });
 
-test('when variadic argument without action handler then .processedArg has array', () => {
+it('when variadic argument without action handler then .processedArg has array', () => {
   const program = new commander.Command();
   program
     .argument('<n...>', 'number');
@@ -165,7 +166,7 @@ test('when variadic argument without action handler then .processedArg has array
   expect(program.processedArgs).toEqual([['1', '2']]);
 });
 
-test('when parseFloat "1e2" then action argument is 100', () => {
+it('when parseFloat "1e2" then action argument is 100', () => {
   let actionValue;
   const program = new commander.Command();
   program
@@ -178,14 +179,14 @@ test('when parseFloat "1e2" then action argument is 100', () => {
   expect(program.processedArgs).toEqual([actionValue]);
 });
 
-test('when defined default value for required argument then throw', () => {
+it('when defined default value for required argument then throw', () => {
   const program = new commander.Command();
   expect(() => {
     program.argument('<number>', 'float argument', 4);
   }).toThrow();
 });
 
-test('when custom processing for argument throws plain error then not CommanderError caught', () => {
+it('when custom processing for argument throws plain error then not CommanderError caught', () => {
   function justSayNo(value) {
     throw new Error('no no no');
   }

@@ -1,6 +1,7 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
-test('when override createCommand then affects help', () => {
+it('when override createCommand then affects help', () => {
   class MyHelp extends commander.Help {
     formatHelp(cmd, helper) {
       return 'custom';

@@ -1,9 +1,10 @@
-const { Option, DualOptions } = require('../lib/option.js');
-const { Command } = require('../');
+import { describe, expect, it } from "bun:test";
+import { Command } from '../index.js';
+import { Option, DualOptions } from '../lib/option'
 
 // This tests an internal helper class which is not currently exposed on the package.
 
-test('when positive option then stored in positiveOptions', () => {
+it('when positive option then stored in positiveOptions', () => {
   const program = new Command();
   program.option('--one');
   const helper = new DualOptions(program.options);
@@ -12,7 +13,7 @@ test('when positive option then stored in positiveOptions', () => {
   expect(helper.dualOptions.size).toEqual(0);
 });
 
-test('when negative option then stored in negativeOptions', () => {
+it('when negative option then stored in negativeOptions', () => {
   const program = new Command();
   program.option('--no-one');
   const helper = new DualOptions(program.options);
@@ -21,7 +22,7 @@ test('when negative option then stored in negativeOptions', () => {
   expect(helper.dualOptions.size).toEqual(0);
 });
 
-test('when unrelated positive and negative options then no dual options', () => {
+it('when unrelated positive and negative options then no dual options', () => {
   const program = new Command();
   program
     .option('--one')
@@ -30,7 +31,7 @@ test('when unrelated positive and negative options then no dual options', () => 
   expect(helper.dualOptions.size).toEqual(0);
 });
 
-test('when related positive and negative options then stored as dual option', () => {
+it('when related positive and negative options then stored as dual option', () => {
   const program = new Command();
   program
     .option('--one')
@@ -39,7 +40,7 @@ test('when related positive and negative options then stored as dual option', ()
   expect(helper.dualOptions.size).toEqual(1);
 });
 
-test('when related negative and positive options then stored as dual option', () => {
+it('when related negative and positive options then stored as dual option', () => {
   const program = new Command();
   program
     .option('--no-one')
@@ -53,22 +54,22 @@ describe('valueFromOption with boolean option', () => {
   const negativeOption = new Option('--no-one');
   const options = [positiveOption, negativeOption];
 
-  test('when negativeOption with false then return true', () => {
+  it('when negativeOption with false then return true', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption(false, negativeOption)).toBe(true);
   });
 
-  test('when negativeOption with true then return false', () => {
+  it('when negativeOption with true then return false', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption(true, negativeOption)).toBe(false);
   });
 
-  test('when positiveOption with false then return false', () => {
+  it('when positiveOption with false then return false', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption(false, positiveOption)).toBe(false);
   });
 
-  test('when positiveOption with true then return true', () => {
+  it('when positiveOption with true then return true', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption(true, positiveOption)).toBe(true);
   });
@@ -79,22 +80,22 @@ describe('valueFromOption with option expecting value and negative with preset',
   const negativeOption = new Option('--no-one').preset('FALSE');
   const options = [positiveOption, negativeOption];
 
-  test('when negativeOption with FALSE then return true', () => {
+  it('when negativeOption with FALSE then return true', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption('FALSE', negativeOption)).toBe(true);
   });
 
-  test('when negativeOption with string then return false', () => {
+  it('when negativeOption with string then return false', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption('foo', negativeOption)).toBe(false);
   });
 
-  test('when positiveOption with FALSE then return false', () => {
+  it('when positiveOption with FALSE then return false', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption('FALSE', positiveOption)).toBe(false);
   });
 
-  test('when positiveOption with true then return true', () => {
+  it('when positiveOption with true then return true', () => {
     const helper = new DualOptions(options);
     expect(helper.valueFromOption('foo', positiveOption)).toBe(true);
   });

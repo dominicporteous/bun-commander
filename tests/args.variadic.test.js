@@ -1,9 +1,10 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Testing variadic arguments. Testing all the action arguments, but could test just variadicArg.
 
 describe('variadic argument', () => {
-  test('when no extra arguments specified for program then variadic arg is empty array', () => {
+  it('when no extra arguments specified for program then variadic arg is empty array', () => {
     const actionMock = jest.fn();
     const program = new commander.Command();
     program
@@ -15,7 +16,7 @@ describe('variadic argument', () => {
     expect(actionMock).toHaveBeenCalledWith('id', [], program.opts(), program);
   });
 
-  test('when extra arguments specified for program then variadic arg is array of values', () => {
+  it('when extra arguments specified for program then variadic arg is array of values', () => {
     const actionMock = jest.fn();
     const program = new commander.Command();
     program
@@ -28,7 +29,7 @@ describe('variadic argument', () => {
     expect(actionMock).toHaveBeenCalledWith('id', extraArguments, program.opts(), program);
   });
 
-  test('when no extra arguments specified for command then variadic arg is empty array', () => {
+  it('when no extra arguments specified for command then variadic arg is empty array', () => {
     const actionMock = jest.fn();
     const program = new commander.Command();
     const cmd = program
@@ -40,7 +41,7 @@ describe('variadic argument', () => {
     expect(actionMock).toHaveBeenCalledWith([], cmd.opts(), cmd);
   });
 
-  test('when extra arguments specified for command then variadic arg is array of values', () => {
+  it('when extra arguments specified for command then variadic arg is array of values', () => {
     const actionMock = jest.fn();
     const program = new commander.Command();
     const cmd = program
@@ -53,7 +54,7 @@ describe('variadic argument', () => {
     expect(actionMock).toHaveBeenCalledWith(extraArguments, cmd.opts(), cmd);
   });
 
-  test('when program variadic argument not last then error', () => {
+  it('when program variadic argument not last then error', () => {
     const program = new commander.Command();
 
     expect(() => {
@@ -61,7 +62,7 @@ describe('variadic argument', () => {
     }).toThrow("only the last argument can be variadic 'variadicArg'");
   });
 
-  test('when command variadic argument not last then error', () => {
+  it('when command variadic argument not last then error', () => {
     const program = new commander.Command();
 
     expect(() => {
@@ -69,7 +70,7 @@ describe('variadic argument', () => {
     }).toThrow("only the last argument can be variadic 'variadicArg'");
   });
 
-  test('when variadic argument then usage shows variadic', () => {
+  it('when variadic argument then usage shows variadic', () => {
     const program = new commander.Command();
     program
       .name('foo')

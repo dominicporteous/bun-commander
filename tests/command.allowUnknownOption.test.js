@@ -1,4 +1,5 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Not testing output, just testing whether an error is detected.
 
@@ -18,7 +19,7 @@ describe('allowUnknownOption', () => {
     writeErrorSpy.mockRestore();
   });
 
-  test('when specify unknown program option then error', () => {
+  it('when specify unknown program option then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -29,7 +30,7 @@ describe('allowUnknownOption', () => {
     }).toThrow();
   });
 
-  test('when specify unknown program option and allowUnknownOption(false) then error', () => {
+  it('when specify unknown program option and allowUnknownOption(false) then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -41,7 +42,7 @@ describe('allowUnknownOption', () => {
     }).toThrow();
   });
 
-  test('when specify unknown program option and allowUnknownOption() then no error', () => {
+  it('when specify unknown program option and allowUnknownOption() then no error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -53,7 +54,7 @@ describe('allowUnknownOption', () => {
     }).not.toThrow();
   });
 
-  test('when specify unknown program option and allowUnknownOption(true) then no error', () => {
+  it('when specify unknown program option and allowUnknownOption(true) then no error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -65,7 +66,7 @@ describe('allowUnknownOption', () => {
     }).not.toThrow();
   });
 
-  test('when specify unknown command option then error', () => {
+  it('when specify unknown command option then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -78,7 +79,7 @@ describe('allowUnknownOption', () => {
     }).toThrow();
   });
 
-  test('when specify unknown command option and allowUnknownOption then no error', () => {
+  it('when specify unknown command option and allowUnknownOption then no error', () => {
     const program = new commander.Command();
     program
       .exitOverride()

@@ -1,4 +1,5 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Test combination of flag and --no-flag
 // (single flags tested in options.bool.test.js)
@@ -13,31 +14,31 @@ describe('boolean option combo with no default', () => {
     return program;
   }
 
-  test('when boolean combo not specified then value is undefined', () => {
+  it('when boolean combo not specified then value is undefined', () => {
     const program = createPepperProgram();
     program.parse(['node', 'test']);
     expect(program.opts().pepper).toBeUndefined();
   });
 
-  test('when boolean combo positive then value is true', () => {
+  it('when boolean combo positive then value is true', () => {
     const program = createPepperProgram();
     program.parse(['node', 'test', '--pepper']);
     expect(program.opts().pepper).toBe(true);
   });
 
-  test('when boolean combo negative then value is false', () => {
+  it('when boolean combo negative then value is false', () => {
     const program = createPepperProgram();
     program.parse(['node', 'test', '--no-pepper']);
     expect(program.opts().pepper).toBe(false);
   });
 
-  test('when boolean combo last is positive then value is true', () => {
+  it('when boolean combo last is positive then value is true', () => {
     const program = createPepperProgram();
     program.parse(['node', 'test', '--no-pepper', '--pepper']);
     expect(program.opts().pepper).toBe(true);
   });
 
-  test('when boolean combo last is negative then value is false', () => {
+  it('when boolean combo last is negative then value is false', () => {
     const program = createPepperProgram();
     program.parse(['node', 'test', '--pepper', '--no-pepper']);
     expect(program.opts().pepper).toBe(false);
@@ -56,19 +57,19 @@ function createPepperProgramWithDefault(defaultValue) {
 
 // boolean option combo, default true, long flags
 describe('boolean option combo, default true, long flags', () => {
-  test('when boolean combo not specified then value is true', () => {
+  it('when boolean combo not specified then value is true', () => {
     const program = createPepperProgramWithDefault(true);
     program.parse(['node', 'test']);
     expect(program.opts().pepper).toBe(true);
   });
 
-  test('when boolean combo positive then value is true', () => {
+  it('when boolean combo positive then value is true', () => {
     const program = createPepperProgramWithDefault(true);
     program.parse(['node', 'test', '--pepper']);
     expect(program.opts().pepper).toBe(true);
   });
 
-  test('when boolean combo negative then value is false', () => {
+  it('when boolean combo negative then value is false', () => {
     const program = createPepperProgramWithDefault(true);
     program.parse(['node', 'test', '--no-pepper']);
     expect(program.opts().pepper).toBe(false);
@@ -77,19 +78,19 @@ describe('boolean option combo, default true, long flags', () => {
 
 // boolean option combo, default false, short flags
 describe('boolean option combo, default false, short flags', () => {
-  test('when boolean combo not specified then value is false', () => {
+  it('when boolean combo not specified then value is false', () => {
     const program = createPepperProgramWithDefault(false);
     program.parse(['node', 'test']);
     expect(program.opts().pepper).toBe(false);
   });
 
-  test('when boolean combo positive then value is true', () => {
+  it('when boolean combo positive then value is true', () => {
     const program = createPepperProgramWithDefault(false);
     program.parse(['node', 'test', '-p']);
     expect(program.opts().pepper).toBe(true);
   });
 
-  test('when boolean combo negative then value is false', () => {
+  it('when boolean combo negative then value is false', () => {
     const program = createPepperProgramWithDefault(false);
     program.parse(['node', 'test', '-P']);
     expect(program.opts().pepper).toBe(false);
@@ -99,19 +100,19 @@ describe('boolean option combo, default false, short flags', () => {
 // boolean option combo with non-boolean default.
 // Changed behaviour to normal default in Commander 9.
 describe('boolean option combo with non-boolean default', () => {
-  test('when boolean combo not specified then value is default', () => {
+  it('when boolean combo not specified then value is default', () => {
     const program = createPepperProgramWithDefault('default');
     program.parse(['node', 'test']);
     expect(program.opts().pepper).toBe('default');
   });
 
-  test('when boolean combo positive then value is true', () => {
+  it('when boolean combo positive then value is true', () => {
     const program = createPepperProgramWithDefault('default');
     program.parse(['node', 'test', '--pepper']);
     expect(program.opts().pepper).toBe(true);
   });
 
-  test('when boolean combo negative then value is false', () => {
+  it('when boolean combo negative then value is false', () => {
     const program = createPepperProgramWithDefault('default');
     program.parse(['node', 'test', '--no-pepper']);
     expect(program.opts().pepper).toBe(false);
@@ -127,19 +128,19 @@ describe('boolean option combo with non-boolean default and preset', () => {
     return program;
   }
 
-  test('when boolean combo not specified then value is default', () => {
+  it('when boolean combo not specified then value is default', () => {
     const program = createPepperProgramWithDefaultAndPreset();
     program.parse(['node', 'test']);
     expect(program.opts().pepper).toBe('default');
   });
 
-  test('when boolean combo positive then value is preset', () => {
+  it('when boolean combo positive then value is preset', () => {
     const program = createPepperProgramWithDefaultAndPreset();
     program.parse(['node', 'test', '--pepper']);
     expect(program.opts().pepper).toBe('preset');
   });
 
-  test('when boolean combo negative then value is false', () => {
+  it('when boolean combo negative then value is false', () => {
     const program = createPepperProgramWithDefaultAndPreset();
     program.parse(['node', 'test', '--no-pepper']);
     expect(program.opts().pepper).toBe(false);

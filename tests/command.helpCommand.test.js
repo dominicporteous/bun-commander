@@ -1,27 +1,29 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
+
 
 describe('help command listed in helpInformation', () => {
-  test('when program has no subcommands then no automatic help command', () => {
+  it('when program has no subcommands then no automatic help command', () => {
     const program = new commander.Command();
     const helpInformation = program.helpInformation();
     expect(helpInformation).not.toMatch(/help \[command\]/);
   });
 
-  test('when program has no subcommands and add help command then has help command', () => {
+  it('when program has no subcommands and add help command then has help command', () => {
     const program = new commander.Command();
     program.addHelpCommand(true);
     const helpInformation = program.helpInformation();
     expect(helpInformation).toMatch(/help \[command\]/);
   });
 
-  test('when program has subcommands then has automatic help command', () => {
+  it('when program has subcommands then has automatic help command', () => {
     const program = new commander.Command();
     program.command('foo');
     const helpInformation = program.helpInformation();
     expect(helpInformation).toMatch(/help \[command\]/);
   });
 
-  test('when program has subcommands and specify only unknown option then display help', () => {
+  it('when program has subcommands and specify only unknown option then display help', () => {
     const program = new commander.Command();
     program
       .configureHelp({ formatHelp: () => '' })
@@ -37,7 +39,7 @@ describe('help command listed in helpInformation', () => {
     expect(caughtErr.code).toEqual('commander.help');
   });
 
-  test('when program has subcommands and suppress help command then no help command', () => {
+  it('when program has subcommands and suppress help command then no help command', () => {
     const program = new commander.Command();
     program.addHelpCommand(false);
     program.command('foo');
@@ -45,7 +47,7 @@ describe('help command listed in helpInformation', () => {
     expect(helpInformation).not.toMatch(/help \[command\]/);
   });
 
-  test('when add custom help command then custom help command', () => {
+  it('when add custom help command then custom help command', () => {
     const program = new commander.Command();
     program.addHelpCommand('myHelp', 'help description');
     const helpInformation = program.helpInformation();
@@ -73,7 +75,7 @@ describe('help command processed on correct command', () => {
     writeSpy.mockRestore();
   });
 
-  test('when "program help" then program', () => {
+  it('when "program help" then program', () => {
     const program = new commander.Command();
     program.exitOverride();
     program.command('sub1');
@@ -83,7 +85,7 @@ describe('help command processed on correct command', () => {
     }).toThrow('program');
   });
 
-  test('when "program help unknown" then program', () => {
+  it('when "program help unknown" then program', () => {
     const program = new commander.Command();
     program.exitOverride();
     program.command('sub1');
@@ -93,7 +95,7 @@ describe('help command processed on correct command', () => {
     }).toThrow('program');
   });
 
-  test('when "program help sub1" then sub1', () => {
+  it('when "program help sub1" then sub1', () => {
     const program = new commander.Command();
     program.exitOverride();
     const sub1 = program.command('sub1');
@@ -103,7 +105,7 @@ describe('help command processed on correct command', () => {
     }).toThrow('sub1');
   });
 
-  test('when "program sub1 help sub2" then sub2', () => {
+  it('when "program sub1 help sub2" then sub2', () => {
     const program = new commander.Command();
     program.exitOverride();
     const sub1 = program.command('sub1');
@@ -114,7 +116,7 @@ describe('help command processed on correct command', () => {
     }).toThrow('sub2');
   });
 
-  test('when default command and "program help" then program', () => {
+  it('when default command and "program help" then program', () => {
     const program = new commander.Command();
     program.exitOverride();
     program.command('sub1', { isDefault: true });

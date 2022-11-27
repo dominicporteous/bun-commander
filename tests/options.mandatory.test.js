@@ -1,10 +1,11 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // Assuming mandatory options behave as normal options apart from the mandatory aspect, not retesting all behaviour.
 // Likewise, not redoing all tests on subcommand after testing on program.
 
 describe('required program option with mandatory value specified', () => {
-  test('when program has required value specified then value as specified', () => {
+  it('when program has required value specified then value as specified', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -13,7 +14,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe('blue');
   });
 
-  test('when program has option with name different than property then still recognised', () => {
+  it('when program has option with name different than property then still recognised', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -22,7 +23,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheeseType).toBe('blue');
   });
 
-  test('when program has required value default then default value', () => {
+  it('when program has required value default then default value', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -31,7 +32,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe('default');
   });
 
-  test('when program has optional value flag specified then true', () => {
+  it('when program has optional value flag specified then true', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -40,7 +41,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe(true);
   });
 
-  test('when program has optional value default then default value', () => {
+  it('when program has optional value default then default value', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -49,7 +50,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe('default');
   });
 
-  test('when program has value/no flag specified with value then specified value', () => {
+  it('when program has value/no flag specified with value then specified value', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -59,7 +60,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe('blue');
   });
 
-  test('when program has mandatory-yes/no flag specified with flag then true', () => {
+  it('when program has mandatory-yes/no flag specified with flag then true', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -69,7 +70,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe(true);
   });
 
-  test('when program has mandatory-yes/mandatory-no flag specified with flag then true', () => {
+  it('when program has mandatory-yes/mandatory-no flag specified with flag then true', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -79,7 +80,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe(true);
   });
 
-  test('when program has yes/no flag specified negated then false', () => {
+  it('when program has yes/no flag specified negated then false', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -89,7 +90,7 @@ describe('required program option with mandatory value specified', () => {
     expect(program.opts().cheese).toBe(false);
   });
 
-  test('when program has required value specified and subcommand then specified value', () => {
+  it('when program has required value specified and subcommand then specified value', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -117,7 +118,7 @@ describe('required program option with mandatory value not specified', () => {
     writeErrorSpy.mockRestore();
   });
 
-  test('when program has required option not specified then error', () => {
+  it('when program has required option not specified then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -128,7 +129,7 @@ describe('required program option with mandatory value not specified', () => {
     }).toThrow();
   });
 
-  test('when program has optional option not specified then error', () => {
+  it('when program has optional option not specified then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -139,7 +140,7 @@ describe('required program option with mandatory value not specified', () => {
     }).toThrow();
   });
 
-  test('when program has yes/no not specified then error', () => {
+  it('when program has yes/no not specified then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -151,7 +152,7 @@ describe('required program option with mandatory value not specified', () => {
     }).toThrow();
   });
 
-  test('when program has required value not specified and subcommand then error', () => {
+  it('when program has required value not specified and subcommand then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -166,7 +167,7 @@ describe('required program option with mandatory value not specified', () => {
 });
 
 describe('required command option with mandatory value specified', () => {
-  test('when command has required value specified then no error and option has specified value', () => {
+  it('when command has required value specified then no error and option has specified value', () => {
     const program = new commander.Command();
     let cmdOptions;
     program
@@ -182,7 +183,7 @@ describe('required command option with mandatory value specified', () => {
     expect(cmdOptions.subby).toBe('blue');
   });
 
-  test('when command has required value specified using env then no error and option has specified value', () => {
+  it('when command has required value specified using env then no error and option has specified value', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -212,7 +213,7 @@ describe('required command option with mandatory value not specified', () => {
     writeErrorSpy.mockRestore();
   });
 
-  test('when command has required value not specified then error', () => {
+  it('when command has required value not specified then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -225,7 +226,7 @@ describe('required command option with mandatory value not specified', () => {
     }).toThrow();
   });
 
-  test('when command has required value but not called then no error', () => {
+  it('when command has required value but not called then no error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -257,7 +258,7 @@ describe('missing mandatory option but help requested', () => {
     writeSpy.mockRestore();
   });
 
-  test('when program has required option not specified and --help then help', () => {
+  it('when program has required option not specified and --help then help', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -273,7 +274,7 @@ describe('missing mandatory option but help requested', () => {
     expect(caughtErr.code).toEqual('commander.helpDisplayed');
   });
 
-  test('when program has required option not specified and subcommand --help then help', () => {
+  it('when program has required option not specified and subcommand --help then help', () => {
     const program = new commander.Command();
     program
       .exitOverride()

@@ -1,4 +1,5 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 describe('unknownCommand', () => {
   // Optional. Use internal knowledge to suppress output to keep test output clean.
@@ -16,7 +17,7 @@ describe('unknownCommand', () => {
     writeErrorSpy.mockRestore();
   });
 
-  test('when unknown argument in simple program then no error', () => {
+  it('when unknown argument in simple program then no error', () => {
     const program = new commander.Command();
     program.exitOverride();
     expect(() => {
@@ -24,7 +25,7 @@ describe('unknownCommand', () => {
     }).not.toThrow();
   });
 
-  test('when unknown command but action handler taking arg then no error', () => {
+  it('when unknown command but action handler taking arg then no error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -37,7 +38,7 @@ describe('unknownCommand', () => {
     }).not.toThrow();
   });
 
-  test('when unknown command but listener then no error', () => {
+  it('when unknown command but listener then no error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -49,7 +50,7 @@ describe('unknownCommand', () => {
     }).not.toThrow();
   });
 
-  test('when unknown command then error', () => {
+  it('when unknown command then error', () => {
     const program = new commander.Command();
     program
       .exitOverride()
@@ -63,7 +64,7 @@ describe('unknownCommand', () => {
     expect(caughtErr.code).toBe('commander.unknownCommand');
   });
 
-  test('when unknown command and unknown option then error is for unknown command', () => {
+  it('when unknown command and unknown option then error is for unknown command', () => {
     //  The unknown command is more useful since the option is for an unknown command (and might be
     // ok if the command had been correctly spelled, say).
     const program = new commander.Command();

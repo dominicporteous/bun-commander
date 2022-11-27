@@ -1,7 +1,8 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // simple sanity check subcommand works
-test('when addCommand and specify subcommand then called', () => {
+it('when addCommand and specify subcommand then called', () => {
   const program = new commander.Command();
   const leafAction = jest.fn();
   const sub = new commander.Command();
@@ -15,7 +16,7 @@ test('when addCommand and specify subcommand then called', () => {
   expect(leafAction).toHaveBeenCalled();
 });
 
-test('when commands added using .addCommand and .command then internals similar', () => {
+it('when commands added using .addCommand and .command then internals similar', () => {
   const program1 = new commander.Command();
   program1.command('sub');
   const program2 = new commander.Command();
@@ -43,7 +44,7 @@ test('when commands added using .addCommand and .command then internals similar'
   }
 });
 
-test('when command without name passed to .addCommand then throw', () => {
+it('when command without name passed to .addCommand then throw', () => {
   const program = new commander.Command();
   const cmd = new commander.Command();
   expect(() => {
@@ -51,7 +52,7 @@ test('when command without name passed to .addCommand then throw', () => {
   }).toThrow();
 });
 
-test('when executable command with custom executableFile passed to .addCommand then ok', () => {
+it('when executable command with custom executableFile passed to .addCommand then ok', () => {
   const program = new commander.Command();
   const cmd = new commander.Command('sub');
   cmd.command('exec', 'exec description', { executableFile: 'custom' });

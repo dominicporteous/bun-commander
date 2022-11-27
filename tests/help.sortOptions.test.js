@@ -1,10 +1,11 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // These are tests of the Help class, not of the Command help.
 // There is some overlap with the higher level Command tests (which predate Help).
 
 describe('sortOptions', () => {
-  test('when unsorted then options in order added', () => {
+  it('when unsorted then options in order added', () => {
     const program = new commander.Command();
     program
       .option('--zzz', 'desc')
@@ -15,7 +16,7 @@ describe('sortOptions', () => {
     expect(visibleOptionNames).toEqual(['zzz', 'aaa', 'bbb', 'help']);
   });
 
-  test('when sortOptions:true then options sorted alphabetically', () => {
+  it('when sortOptions:true then options sorted alphabetically', () => {
     const program = new commander.Command();
     program
       .configureHelp({ sortOptions: true })
@@ -27,7 +28,7 @@ describe('sortOptions', () => {
     expect(visibleOptionNames).toEqual(['aaa', 'bbb', 'help', 'zzz']);
   });
 
-  test('when both short and long flags then sort on short flag', () => {
+  it('when both short and long flags then sort on short flag', () => {
     const program = new commander.Command();
     program
       .configureHelp({ sortOptions: true })
@@ -39,7 +40,7 @@ describe('sortOptions', () => {
     expect(visibleOptionNames).toEqual(['help', 'zzz', 'aaa', 'bbb']);
   });
 
-  test('when lone short and long flags then sort on lone flag', () => {
+  it('when lone short and long flags then sort on lone flag', () => {
     const program = new commander.Command();
     program
       .configureHelp({ sortOptions: true })
@@ -51,7 +52,7 @@ describe('sortOptions', () => {
     expect(visibleOptionNames).toEqual(['aaa', 'b', 'help', 'zzz']);
   });
 
-  test('when mixed case flags then sort is case insensitive', () => {
+  it('when mixed case flags then sort is case insensitive', () => {
     const program = new commander.Command();
     program
       .configureHelp({ sortOptions: true })
@@ -63,7 +64,7 @@ describe('sortOptions', () => {
     expect(visibleOptionNames).toEqual(['a', 'B', 'c', 'help']);
   });
 
-  test('when negated option then sort negated option separately', () => {
+  it('when negated option then sort negated option separately', () => {
     const program = new commander.Command();
     program
       .configureHelp({ sortOptions: true })

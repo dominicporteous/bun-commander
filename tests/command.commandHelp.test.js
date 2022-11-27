@@ -1,8 +1,9 @@
-const commander = require('../');
+import { describe, expect, it } from "bun:test";
+import commander from '../index.js';
 
 // This is a ported legacy test.
 
-test('when program has command then appears in help', () => {
+it('when program has command then appears in help', () => {
   const program = new commander.Command();
   program
     .command('bare');
@@ -10,7 +11,7 @@ test('when program has command then appears in help', () => {
   expect(commandHelp).toMatch(/Commands:\n +bare\n/);
 });
 
-test('when program has command with optional arg then appears in help', () => {
+it('when program has command with optional arg then appears in help', () => {
   const program = new commander.Command();
   program
     .command('bare [bare-arg]');

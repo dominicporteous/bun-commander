@@ -1,6 +1,6 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
-var program = require('../../');
+import program from '../../';
 
 program
   .version('0.0.1')
