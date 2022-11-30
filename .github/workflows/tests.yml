@@ -1,4 +1,4 @@
-name: test
+name: Test suite
 
 on: [push, pull_request]
 
@@ -14,7 +14,6 @@ jobs:
       matrix:
         bun-version: [0.2.0]
         os: [ubuntu-latest]
-
     steps:
     - uses: actions/checkout@v3
     - name: Setup Bun Runtime
