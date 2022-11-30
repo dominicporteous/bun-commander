@@ -1,28 +1,32 @@
 import { describe, expect, it } from "bun:test";
 import commander from '../index.js';
 
-describe.each([true, false])('storeOptionsAsProperties is %s', (storeOptionsAsProperties) => {
-  it('when option specified on CLI then value returned by getOptionValue', () => {
-    const program = new commander.Command();
-    program
-      .storeOptionsAsProperties(storeOptionsAsProperties)
-      .option('--cheese [type]', 'cheese type');
-    const cheeseType = 'blue';
-    program.parse(['node', 'test', '--cheese', cheeseType]);
-    expect(program.getOptionValue('cheese')).toBe(cheeseType);
-  });
+for (const storeOptionsAsProperties of [true, false]) {
 
-  it('when setOptionValue then value returned by opts', () => {
-    const program = new commander.Command();
-    const cheeseType = 'blue';
-    // Note: opts() only returns declared options when options stored as properties
-    program
-      .storeOptionsAsProperties(storeOptionsAsProperties)
-      .option('--cheese [type]', 'cheese type')
-      .setOptionValue('cheese', cheeseType);
-    expect(program.opts().cheese).toBe(cheeseType);
+  describe(`storeOptionsAsProperties is ${storeOptionsAsProperties}`, () => {
+    it('when option specified on CLI then value returned by getOptionValue', () => {
+      const program = new commander.Command();
+      program
+        .storeOptionsAsProperties(storeOptionsAsProperties)
+        .option('--cheese [type]', 'cheese type');
+      const cheeseType = 'blue';
+      program.parse(['node', 'test', '--cheese', cheeseType]);
+      expect(program.getOptionValue('cheese')).toBe(cheeseType);
+    });
+
+    it('when setOptionValue then value returned by opts', () => {
+      const program = new commander.Command();
+      const cheeseType = 'blue';
+      // Note: opts() only returns declared options when options stored as properties
+      program
+        .storeOptionsAsProperties(storeOptionsAsProperties)
+        .option('--cheese [type]', 'cheese type')
+        .setOptionValue('cheese', cheeseType);
+      expect(program.opts().cheese).toBe(cheeseType);
+    });
   });
-});
+  
+}
 
 it('when setOptionValueWithSource then value returned by opts', () => {
   const program = new commander.Command();

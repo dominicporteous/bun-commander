@@ -8,7 +8,7 @@ it('when program has command then appears in help', () => {
   program
     .command('bare');
   const commandHelp = program.helpInformation();
-  expect(commandHelp).toMatch(/Commands:\n +bare\n/);
+  expect(new RegExp(/Commands:\n +bare\n/).test(commandHelp)).toBe(true);
 });
 
 it('when program has command with optional arg then appears in help', () => {
@@ -16,5 +16,5 @@ it('when program has command with optional arg then appears in help', () => {
   program
     .command('bare [bare-arg]');
   const commandHelp = program.helpInformation();
-  expect(commandHelp).toMatch(/Commands:\n +bare \[bare-arg\]\n/);
+  expect(new RegExp(/Commands:\n +bare \[bare-arg\]\n/).test(commandHelp)).toBe(true);
 });

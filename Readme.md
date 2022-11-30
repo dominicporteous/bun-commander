@@ -1,11 +1,36 @@
-# Commander.js
+# bun-commander (ported to Bun from [commander.js](https://github.com/tj/commander.js)
 
-[![Build Status](https://github.com/tj/commander.js/workflows/build/badge.svg)](https://github.com/tj/commander.js/actions?query=workflow%3A%22build%22)
-[![NPM Version](http://img.shields.io/npm/v/commander.svg?style=flat)](https://www.npmjs.org/package/commander)
-[![NPM Downloads](https://img.shields.io/npm/dm/commander.svg?style=flat)](https://npmcharts.com/compare/commander?minimal=true)
-[![Install Size](https://packagephobia.now.sh/badge?p=commander)](https://packagephobia.now.sh/result?p=commander)
+This is a port of the excellent commander.js command line utility library, to work in the Bun runtime.
 
-The complete solution for [node.js](http://nodejs.org) command-line interfaces.
+Currently we only guarentee API and functional compatibility (unless noted below) - nothing to do with tooling at the moment.
+
+## Current ompatibility issues
+
+### Sub-process signals
+
+https://github.com/oven-sh/bun/issues/1505
+
+Currently process.on doesn't do anything in Bun. 
+
+### Error propogation 
+
+https://github.com/oven-sh/bun/issues/1556
+
+If an error is thrown from a command then commander.js will propogate the error correctly and node will crash if there is not an error handler attached/configured.
+
+This is not the default behaviour of Bun at the moment, so we have patched in with a process.exit(1) to simulate the behaviour. YMMV.
+
+### Default command exit codes
+
+As a result of the above behavour, some default/built-ins (e.g. --version, --help) **may** not return the same exit code in Bun as in Node.
+
+### Node inspector ([link](#debugging-stand-alone-executable-subcommands))
+
+Will not work until Bun supports attaching an inspector and exposes the API.
+
+## Readme
+
+The complete solution for your [Bun](https://bun.sh) command-line interfaces.
 
 Read this in other languages: English | [简体中文](./Readme_zh-CN.md)
 

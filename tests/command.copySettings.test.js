@@ -1,5 +1,6 @@
 import { describe, expect, it } from "bun:test";
 import commander from '../index.js';
+import sinon from 'sinon'
 
 // Tests some private properties as simpler than pure tests of observable behaviours.
 // Testing before and after values in some cases, to ensure value actually changes (when copied).
@@ -8,15 +9,14 @@ it('when add subcommand with .command() then calls copyInheritedSettings from pa
   const program = new commander.Command();
 
   // This is a bit intrusive, but check expectation that copyInheritedSettings is called internally.
-  const copySettingMock = jest.fn();
+  const copySettingMock = sinon.spy();
   program.createCommand = (name) => {
     const cmd = new commander.Command(name);
     cmd.copyInheritedSettings = copySettingMock;
     return cmd;
   };
   program.command('sub');
-
-  expect(copySettingMock).toHaveBeenCalledWith(program);
+  expect(copySettingMock.lastCall.args).toEqual([program]);
 });
 
 describe('copyInheritedSettings property tests', () => {

@@ -3,6 +3,7 @@ import commander from '../index.js';
 import childProcess from 'node:child_process';
 import path from 'node:path';
 import util from 'node:util';
+import sinon from 'sinon'
 
 const execFileAsync = util.promisify(childProcess.execFile);
 
@@ -11,25 +12,25 @@ describe('default executable command', () => {
   const pm = path.join(__dirname, './fixtures/pm');
 
   it('when default subcommand and no command then call default', async() => {
-    const { stdout } = await execFileAsync('bun', [pm]);
-    expect(stdout).toBe('default\n');
+    const res = await execFileAsync('bun', [pm]);
+    expect(res).toEqual('default\n');
   });
 
   it('when default subcommand and unrecognised argument then call default with argument', async() => {
-    const { stdout } = await execFileAsync('bun', [pm, 'an-argument']);
-    expect(stdout).toBe("default\n[ 'an-argument' ]\n");
+    const res = await execFileAsync('bun', [pm, 'an-argument']);
+    expect(res).toEqual('default\n[ "an-argument" ]\n');
   });
 
   it('when default subcommand and unrecognised option then call default with option', async() => {
-    const { stdout } = await execFileAsync('bun', [pm, '--an-option']);
-    expect(stdout).toBe("default\n[ '--an-option' ]\n");
+    const res = await execFileAsync('bun', [pm, '--an-option']);
+    expect(res).toEqual('default\n[ "--an-option" ]\n');
   });
 });
 
 describe('default action command', () => {
   function makeProgram() {
     const program = new commander.Command();
-    const actionMock = jest.fn();
+    const actionMock = sinon.spy();
     program
       .command('other');
     program
@@ -43,25 +44,25 @@ describe('default action command', () => {
   it('when default subcommand and no command then call default', () => {
     const { program, actionMock } = makeProgram();
     program.parse('bun test.js'.split(' '));
-    expect(actionMock).toHaveBeenCalled();
+    expect(actionMock.called).toBe(true);
   });
 
   it('when default subcommand and unrecognised argument then call default', () => {
     const { program, actionMock } = makeProgram();
     program.parse('bun test.js an-argument'.split(' '));
-    expect(actionMock).toHaveBeenCalled();
+    expect(actionMock.called).toBe(true);
   });
 
   it('when default subcommand and unrecognised option then call default', () => {
     const { program, actionMock } = makeProgram();
     program.parse('bun test.js --an-option'.split(' '));
-    expect(actionMock).toHaveBeenCalled();
+    expect(actionMock.called).toBe(true);
   });
 });
 
 describe('default added command', () => {
   function makeProgram() {
-    const actionMock = jest.fn();
+    const actionMock = sinon.spy();
     const defaultCmd = new commander.Command('default')
       .allowUnknownOption()
       .allowExcessArguments()
@@ -78,18 +79,18 @@ describe('default added command', () => {
   it('when default subcommand and no command then call default', () => {
     const { program, actionMock } = makeProgram();
     program.parse('bun test.js'.split(' '));
-    expect(actionMock).toHaveBeenCalled();
+    expect(actionMock.called).toBe(true);
   });
 
   it('when default subcommand and unrecognised argument then call default', () => {
     const { program, actionMock } = makeProgram();
     program.parse('bun test.js an-argument'.split(' '));
-    expect(actionMock).toHaveBeenCalled();
+    expect(actionMock.called).toBe(true);
   });
 
   it('when default subcommand and unrecognised option then call default', () => {
     const { program, actionMock } = makeProgram();
     program.parse('bun test.js --an-option'.split(' '));
-    expect(actionMock).toHaveBeenCalled();
+    expect(actionMock.called).toBe(true);
   });
 });

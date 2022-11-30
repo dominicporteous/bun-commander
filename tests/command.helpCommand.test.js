@@ -1,26 +1,27 @@
 import { describe, expect, it } from "bun:test";
+import { throws } from 'node:assert'; 
 import commander from '../index.js';
-
+import sinon from 'sinon'
 
 describe('help command listed in helpInformation', () => {
   it('when program has no subcommands then no automatic help command', () => {
     const program = new commander.Command();
     const helpInformation = program.helpInformation();
-    expect(helpInformation).not.toMatch(/help \[command\]/);
+    expect(new RegExp(/help \[command\]/).test(helpInformation)).toBe(false);
   });
 
   it('when program has no subcommands and add help command then has help command', () => {
     const program = new commander.Command();
     program.addHelpCommand(true);
     const helpInformation = program.helpInformation();
-    expect(helpInformation).toMatch(/help \[command\]/);
+    expect(new RegExp(/help \[command\]/).test(helpInformation)).toBe(true);
   });
 
   it('when program has subcommands then has automatic help command', () => {
     const program = new commander.Command();
     program.command('foo');
     const helpInformation = program.helpInformation();
-    expect(helpInformation).toMatch(/help \[command\]/);
+    expect(new RegExp(/help \[command\]/).test(helpInformation)).toBe(true);
   });
 
   it('when program has subcommands and specify only unknown option then display help', () => {
@@ -44,35 +45,35 @@ describe('help command listed in helpInformation', () => {
     program.addHelpCommand(false);
     program.command('foo');
     const helpInformation = program.helpInformation();
-    expect(helpInformation).not.toMatch(/help \[command\]/);
+    expect(new RegExp(/help \[command\]/).test(helpInformation)).toBe(false);
   });
 
   it('when add custom help command then custom help command', () => {
     const program = new commander.Command();
     program.addHelpCommand('myHelp', 'help description');
     const helpInformation = program.helpInformation();
-    expect(helpInformation).toMatch(/myHelp +help description/);
+    expect(new RegExp(/myHelp +help description/).test(helpInformation)).toBe(true);
   });
 });
 
 describe('help command processed on correct command', () => {
   // Use internal knowledge to suppress output to keep test output clean.
-  let writeErrorSpy;
+  //let writeErrorSpy;
   let writeSpy;
 
   beforeAll(() => {
-    writeErrorSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
-    writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
+    //writeErrorSpy = sinon.stub(Bun, 'write').callsFake(() => { });
+    writeSpy = sinon.stub(process.stdout, 'write').callsFake(() => { });
   });
 
   afterEach(() => {
-    writeErrorSpy.mockClear();
-    writeSpy.mockClear();
+    //writeErrorSpy.restore();
+    writeSpy.restore();
   });
 
   afterAll(() => {
-    writeErrorSpy.mockRestore();
-    writeSpy.mockRestore();
+    //writeErrorSpy.restore();
+    writeSpy.restore();
   });
 
   it('when "program help" then program', () => {
@@ -80,9 +81,9 @@ describe('help command processed on correct command', () => {
     program.exitOverride();
     program.command('sub1');
     program.exitOverride(() => { throw new Error('program'); });
-    expect(() => {
+    throws(() => {
       program.parse('node test.js help'.split(' '));
-    }).toThrow('program');
+    }, { message: 'program' });
   });
 
   it('when "program help unknown" then program', () => {
@@ -90,9 +91,9 @@ describe('help command processed on correct command', () => {
     program.exitOverride();
     program.command('sub1');
     program.exitOverride(() => { throw new Error('program'); });
-    expect(() => {
+    throws(() => {
       program.parse('node test.js help unknown'.split(' '));
-    }).toThrow('program');
+    }, { message: 'program' });
   });
 
   it('when "program help sub1" then sub1', () => {
@@ -100,9 +101,9 @@ describe('help command processed on correct command', () => {
     program.exitOverride();
     const sub1 = program.command('sub1');
     sub1.exitOverride(() => { throw new Error('sub1'); });
-    expect(() => {
+    throws(() => {
       program.parse('node test.js help sub1'.split(' '));
-    }).toThrow('sub1');
+    }, { message: 'sub1' });
   });
 
   it('when "program sub1 help sub2" then sub2', () => {
@@ -111,9 +112,9 @@ describe('help command processed on correct command', () => {
     const sub1 = program.command('sub1');
     const sub2 = sub1.command('sub2');
     sub2.exitOverride(() => { throw new Error('sub2'); });
-    expect(() => {
+    throws(() => {
       program.parse('node test.js sub1 help sub2'.split(' '));
-    }).toThrow('sub2');
+    }, { message: 'sub2' });
   });
 
   it('when default command and "program help" then program', () => {
@@ -121,8 +122,8 @@ describe('help command processed on correct command', () => {
     program.exitOverride();
     program.command('sub1', { isDefault: true });
     program.exitOverride(() => { throw new Error('program'); });
-    expect(() => {
+    throws(() => {
       program.parse('node test.js help'.split(' '));
-    }).toThrow('program');
+    }, { message: 'program' });
   });
 });

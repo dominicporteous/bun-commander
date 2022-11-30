@@ -1,8 +1,10 @@
 import { describe, expect, it } from "bun:test";
+import { doesNotThrow, throws } from 'node:assert';  
 import commander from '../index.js';
+import sinon from 'sinon'
 
 it('when default writeErr() then error on stderr', () => {
-  const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
   const program = new commander.Command();
   program.exitOverride();
 
@@ -11,13 +13,14 @@ it('when default writeErr() then error on stderr', () => {
   } catch (err) {
   }
 
-  expect(writeSpy).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.calledOnce).toBe(true);
+  expect(writeSpy.lastCall.args[0]).toBe(Bun.stderr)
+  writeSpy.restore();
 });
 
 it('when custom writeErr() then error on custom output', () => {
-  const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
-  const customWrite = jest.fn();
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
+  const customWrite = sinon.spy();
   const program = new commander.Command();
   program
     .exitOverride()
@@ -28,95 +31,107 @@ it('when custom writeErr() then error on custom output', () => {
   } catch (err) {
   }
 
-  expect(writeSpy).toHaveBeenCalledTimes(0);
-  expect(customWrite).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.called).toBe(false);
+  expect(customWrite.calledOnce).toBe(true);
+  writeSpy.restore();
 });
 
 it('when default write() then version on stdout', () => {
-  const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
+
   const program = new commander.Command();
   program
     .exitOverride()
     .version('1.2.3');
 
-  expect(() => {
+  // This should throw - https://github.com/oven-sh/bun/issues/1556
+  doesNotThrow(() => {
     program.parse(['--version'], { from: 'user' });
-  }).toThrow();
+  });
 
-  expect(writeSpy).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.calledOnce).toBe(true);
+  expect(writeSpy.lastCall.args[0]).toBe(Bun.stdout)
+
+  writeSpy.restore();
 });
 
 it('when custom write() then version on custom output', () => {
-  const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
-  const customWrite = jest.fn();
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
+  const customWrite = sinon.spy();
   const program = new commander.Command();
   program
     .exitOverride()
     .version('1.2.3')
     .configureOutput({ writeOut: customWrite });
 
-  expect(() => {
+  // This should throw - https://github.com/oven-sh/bun/issues/1556
+  doesNotThrow(() => {
     program.parse(['--version'], { from: 'user' });
-  }).toThrow();
+  })
 
-  expect(writeSpy).toHaveBeenCalledTimes(0);
-  expect(customWrite).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.called).toBe(false);
+  expect(customWrite.calledOnce).toBe(true);
+
+  writeSpy.restore();
 });
 
 it('when default write() then help on stdout', () => {
-  const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
+
   const program = new commander.Command();
   program.outputHelp();
 
-  expect(writeSpy).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.called).toBe(true);
+  expect(writeSpy.lastCall.args[0]).toBe(Bun.stdout)
+
+  writeSpy.restore();
 });
 
 it('when custom write() then help error on custom output', () => {
-  const writeSpy = jest.spyOn(process.stdout, 'write').mockImplementation(() => { });
-  const customWrite = jest.fn();
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
+  const customWrite = sinon.spy();
   const program = new commander.Command();
   program.configureOutput({ writeOut: customWrite });
   program.outputHelp();
 
-  expect(writeSpy).toHaveBeenCalledTimes(0);
-  expect(customWrite).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.called).toBe(false);
+  expect(customWrite.called).toBe(true);
+
+  writeSpy.restore();
 });
 
 it('when default writeErr then help error on stderr', () => {
-  const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
   const program = new commander.Command();
   program.outputHelp({ error: true });
 
-  expect(writeSpy).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.called).toBe(true);
+  expect(writeSpy.lastCall.args[0]).toBe(Bun.stderr)
+  writeSpy.restore();
 });
 
+
 it('when custom writeErr then help error on custom output', () => {
-  const writeSpy = jest.spyOn(process.stderr, 'write').mockImplementation(() => { });
-  const customWrite = jest.fn();
+  const writeSpy = sinon.stub(Bun, 'write').callsFake(() => { });
+  const customWrite = sinon.spy();
   const program = new commander.Command();
   program.configureOutput({ writeErr: customWrite });
   program.outputHelp({ error: true });
 
-  expect(writeSpy).toHaveBeenCalledTimes(0);
-  expect(customWrite).toHaveBeenCalledTimes(1);
-  writeSpy.mockRestore();
+  expect(writeSpy.called).toBe(false);
+  expect(customWrite.calledOnce).toBe(true);
+  writeSpy.restore();
 });
 
 it('when default getOutHelpWidth then help helpWidth from stdout', () => {
   const expectedColumns = 123;
-  const holdIsTTY = process.stdout.isTTY;
-  const holdColumns = process.stdout.columns;
+  const holdIsTTY = Bun.stdout.isTTY;
+  const holdColumns = Bun.stdout.columns;
   let helpWidth;
 
-  process.stderr.isTTY = true;
-  process.stdout.columns = expectedColumns;
-  process.stdout.isTTY = true;
+  Bun.stderr.isTTY = true;
+  Bun.stdout.columns = expectedColumns;
+  Bun.stdout.isTTY = true;
   const program = new commander.Command();
   program
     .configureHelp({
@@ -128,9 +143,10 @@ it('when default getOutHelpWidth then help helpWidth from stdout', () => {
   program.outputHelp();
 
   expect(helpWidth).toBe(expectedColumns);
-  process.stdout.columns = holdColumns;
-  process.stdout.isTTY = holdIsTTY;
+  Bun.stdout.columns = holdColumns;
+  Bun.stdout.isTTY = holdIsTTY;
 });
+
 
 it('when custom getOutHelpWidth then help helpWidth custom', () => {
   const expectedColumns = 123;
@@ -153,12 +169,12 @@ it('when custom getOutHelpWidth then help helpWidth custom', () => {
 
 it('when default getErrHelpWidth then help error helpWidth from stderr', () => {
   const expectedColumns = 123;
-  const holdIsTTY = process.stderr.isTTY;
-  const holdColumns = process.stderr.columns;
+  const holdIsTTY = Bun.stderr.isTTY;
+  const holdColumns = Bun.stderr.columns;
   let helpWidth;
 
-  process.stderr.isTTY = true;
-  process.stderr.columns = expectedColumns;
+  Bun.stderr.isTTY = true;
+  Bun.stderr.columns = expectedColumns;
   const program = new commander.Command();
   program
     .configureHelp({
@@ -170,8 +186,8 @@ it('when default getErrHelpWidth then help error helpWidth from stderr', () => {
   program.outputHelp({ error: true });
 
   expect(helpWidth).toBe(expectedColumns);
-  process.stderr.isTTY = holdIsTTY;
-  process.stderr.columns = holdColumns;
+  Bun.stderr.isTTY = holdIsTTY;
+  Bun.stderr.columns = holdColumns;
 });
 
 it('when custom getErrHelpWidth then help error helpWidth custom', () => {
@@ -235,11 +251,11 @@ it('when custom getErrHelpWidth and configureHelp:helpWidth then help error help
 
 it('when set configureOutput then get configureOutput', () => {
   const outputOptions = {
-    writeOut: jest.fn(),
-    writeErr: jest.fn(),
-    getOutHelpWidth: jest.fn(),
-    getErrHelpWidth: jest.fn(),
-    outputError: jest.fn()
+    writeOut: sinon.spy(),
+    writeErr: sinon.spy(),
+    getOutHelpWidth: sinon.spy(),
+    getErrHelpWidth: sinon.spy(),
+    outputError: sinon.spy()
   };
   const program = new commander.Command();
   program.configureOutput(outputOptions);
@@ -247,7 +263,7 @@ it('when set configureOutput then get configureOutput', () => {
 });
 
 it('when custom outputErr and error then outputErr called', () => {
-  const outputError = jest.fn();
+  const outputError = sinon.spy();
   const program = new commander.Command();
   program
     .exitOverride()
@@ -255,22 +271,22 @@ it('when custom outputErr and error then outputErr called', () => {
       outputError
     });
 
-  expect(() => {
+  throws(() => {
     program.parse(['--unknownOption'], { from: 'user' });
-  }).toThrow();
-  expect(outputError).toHaveBeenCalledWith("error: unknown option '--unknownOption'\n", program._outputConfiguration.writeErr);
+  });
+  expect(outputError.lastCall.args).toEqual(["error: unknown option '--unknownOption'\n", program._outputConfiguration.writeErr]);
 });
 
 it('when custom outputErr and writeErr and error then outputErr passed writeErr', () => {
-  const writeErr = () => jest.fn();
-  const outputError = jest.fn();
+  const writeErr = () => sinon.spy();
+  const outputError = sinon.spy();
   const program = new commander.Command();
   program
     .exitOverride()
     .configureOutput({ writeErr, outputError });
 
-  expect(() => {
+  throws(() => {
     program.parse(['--unknownOption'], { from: 'user' });
-  }).toThrow();
-  expect(outputError).toHaveBeenCalledWith("error: unknown option '--unknownOption'\n", writeErr);
+  });
+  expect(outputError.lastCall.args).toEqual(["error: unknown option '--unknownOption'\n", writeErr]);
 });

@@ -1,29 +1,29 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 
 process.on('SIGUSR1', function() {
-  process.stdout.write('SIGUSR1');
+  Bun.write(Bun.stderr, 'SIGHUSR1');
   process.exit();
 });
 
 process.on('SIGUSR2', function() {
-  process.stdout.write('SIGUSR2');
+  Bun.write(Bun.stderr, 'SIGUSR2');
   process.exit();
 });
 
 process.on('SIGTERM', function() {
-  process.stdout.write('SIGTERM');
+  Bun.write(Bun.stderr, 'SIGTERM');
   process.exit();
 });
 
 process.on('SIGINT', function() {
-  process.stdout.write('SIGINT');
+  Bun.write(Bun.stderr, 'SIGINT');
   process.exit();
 });
 
 process.on('SIGHUP', function() {
-  process.stdout.write('SIGHUP');
+  Bun.write(Bun.stderr, 'SIGHUP');
   process.exit();
 });
 
-process.stdout.write('Listening for signal...');
+Bun.write(Bun.stderr, 'Listening for signal...');
 setInterval(function() {}, 1000); // Stay running

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "bun:test";
+import { throws } from 'node:assert';
 import commander from '../index.js';
 
 it('when command argument in choices then argument set', () => {
@@ -21,9 +22,9 @@ it('when command argument is not in choices then error', () => {
       writeErr: () => {}
     })
     .addArgument(new commander.Argument('<shade>').choices(['red', 'blue']));
-  expect(() => {
+    throws(() => {
     program.parse(['orange'], { from: 'user' });
-  }).toThrow();
+  });
 });
 
 describe('choices parameter is treated as readonly, per TypeScript declaration', () => {
@@ -53,8 +54,8 @@ describe('choices parameter is treated as readonly, per TypeScript declaration',
       })
       .addArgument(new commander.Argument('<shade>').choices(param));
     param.push('orange');
-    expect(() => {
+    throws(() => {
       program.parse(['orange'], { from: 'user' });
-    }).toThrow();
+    });
   });
 });

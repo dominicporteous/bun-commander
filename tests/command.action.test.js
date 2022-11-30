@@ -1,16 +1,19 @@
-import { describe, expect, it } from "bun:test";
+
+import { expect, it } from "bun:test";
+import { throws } from 'node:assert';
 import commander from '../index.js';
+import sinon from 'sinon'
 
 // Test some behaviours of .action not covered in more specific tests.
 
 it('when .action called then command passed to action', () => {
-  const actionMock = jest.fn();
+  const actionMock = sinon.spy();
   const program = new commander.Command();
   const cmd = program
     .command('info')
     .action(actionMock);
   program.parse(['node', 'test', 'info']);
-  expect(actionMock).toHaveBeenCalledWith(cmd.opts(), cmd);
+  expect(actionMock.lastCall.args).toEqual([cmd.opts(), cmd]);
 });
 
 it('when .action called then this is set to command', () => {
@@ -34,70 +37,82 @@ it('when .action called then program.args only contains args', () => {
   expect(program.args).toEqual(['info', 'my-file']);
 });
 
-test.each(getTestCases('<file>'))('when .action on program with required argument via %s and argument supplied then action called', (methodName, program) => {
-  const actionMock = jest.fn();
-  program.action(actionMock);
-  program.parse(['node', 'test', 'my-file']);
-  expect(actionMock).toHaveBeenCalledWith('my-file', program.opts(), program);
-});
+for(const [methodName, program] of getTestCases('<file>')){
+  it(`when .action on program with required argument via ${methodName} and argument supplied then action called`, () => {
+    const actionMock = sinon.spy();
+    program.action(actionMock);
+    program.parse(['node', 'test', 'my-file']);
+    expect(actionMock.lastCall.args).toEqual(['my-file', program.opts(), program]);
+  });
+}
 
-test.each(getTestCases('<file>'))('when .action on program with required argument via %s and argument not supplied then action not called', (methodName, program) => {
-  const actionMock = jest.fn();
-  program
-    .exitOverride()
-    .configureOutput({ writeErr: () => {} })
-    .action(actionMock);
-  expect(() => {
-    program.parse(['node', 'test']);
-  }).toThrow();
-  expect(actionMock).not.toHaveBeenCalled();
-});
+for(const [methodName, program] of getTestCases('<file>')){
+  it(`when .action on program with required argument via ${methodName} and argument not supplied then action not called`, () => {
+    const actionMock = sinon.spy();
+    program
+      .exitOverride()
+      .configureOutput({ writeErr: () => {} })
+      .action(actionMock);
+    throws(() => {
+      program.parse(['node', 'test']);
+    });
+    expect(actionMock.called).toBe(false);
+  });
+}
 
 // Changes made in #729 to call program action handler
 it('when .action on program and no arguments then action called', () => {
-  const actionMock = jest.fn();
+  const actionMock = sinon.spy();
   const program = new commander.Command();
   program
     .action(actionMock);
   program.parse(['node', 'test']);
-  expect(actionMock).toHaveBeenCalledWith(program.opts(), program);
+  expect(actionMock.lastCall.args).toEqual([program.opts(), program]);
 });
 
-test.each(getTestCases('[file]'))('when .action on program with optional argument via %s supplied then action called', (methodName, program) => {
-  const actionMock = jest.fn();
-  program.action(actionMock);
-  program.parse(['node', 'test', 'my-file']);
-  expect(actionMock).toHaveBeenCalledWith('my-file', program.opts(), program);
-});
+for(const [methodName, program] of getTestCases('[file]')){
+  it(`when .action on program with optional argument via ${methodName} supplied then action called`, () => {
+    const actionMock = sinon.spy();
+    program.action(actionMock);
+    program.parse(['node', 'test', 'my-file']);
+    expect(actionMock.lastCall.args).toEqual(['my-file', program.opts(), program]);
+  });
+}
 
-test.each(getTestCases('[file]'))('when .action on program without optional argument supplied then action called', (methodName, program) => {
-  const actionMock = jest.fn();
-  program.action(actionMock);
-  program.parse(['node', 'test']);
-  expect(actionMock).toHaveBeenCalledWith(undefined, program.opts(), program);
-});
+for(const [methodName, program] of getTestCases('[file')){
+  it('when .action on program without optional argument supplied then action called', () => {
+    const actionMock = sinon.spy();
+    program.action(actionMock);
+    program.parse(['node', 'test']);
+    expect(actionMock.lastCall.args).toEqual([undefined, program.opts(), program]);
+  });
+}
 
-test.each(getTestCases('[file]'))('when .action on program with optional argument via %s and subcommand and program argument then program action called', (methodName, program) => {
-  const actionMock = jest.fn();
-  program.action(actionMock);
-  program
-    .command('subcommand');
+for(const [methodName, program] of getTestCases('[file')){
+  it(`when .action on program with optional argument via ${methodName} and subcommand and program argument then program action called`, () => {
+    const actionMock = sinon.spy();
+    program.action(actionMock);
+    program
+      .command('subcommand');
 
-  program.parse(['node', 'test', 'a']);
+    program.parse(['node', 'test', 'a']);
 
-  expect(actionMock).toHaveBeenCalledWith('a', program.opts(), program);
-});
+    expect(actionMock.lastCall.args).toEqual(['a', program.opts(), program]);
+  });
+}
 
 // Changes made in #1062 to allow this case
-test.each(getTestCases('[file]'))('when .action on program with optional argument via %s and subcommand and no program argument then program action called', (methodName, program) => {
-  const actionMock = jest.fn();
-  program.action(actionMock);
-  program.command('subcommand');
+for(const [methodName, program] of getTestCases('[file')){
+  it(`when .action on program with optional argument via %{methodName} and subcommand and no program argument then program action called`, () => {
+    const actionMock = sinon.spy();
+    program.action(actionMock);
+    program.command('subcommand');
 
-  program.parse(['node', 'test']);
+    program.parse(['node', 'test']);
 
-  expect(actionMock).toHaveBeenCalledWith(undefined, program.opts(), program);
-});
+    expect(actionMock.lastCall.args).toEqual([undefined, program.opts(), program]);
+  });
+}
 
 it('when action is async then can await parseAsync', async() => {
   let asyncFinished = false;

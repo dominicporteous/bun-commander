@@ -1,5 +1,7 @@
 import { describe, expect, it } from "bun:test";
+import { throws } from "node:assert";
 import commander from '../index.js';
+import sinon from 'sinon'
 
 // Running alias commands is tested in command.executableSubcommand.lookup.test.js
 // Test various other behaviours for .alias
@@ -10,7 +12,7 @@ it('when command has alias then appears in help', () => {
     .command('info [thing]')
     .alias('i');
   const helpInformation = program.helpInformation();
-  expect(helpInformation).toMatch('info|i');
+  expect(helpInformation.includes('info|i ')).toBe(true);
 });
 
 it('when command has aliases added separately then only first appears in help', () => {
@@ -20,7 +22,7 @@ it('when command has aliases added separately then only first appears in help', 
     .alias('ls')
     .alias('dir');
   const helpInformation = program.helpInformation();
-  expect(helpInformation).toMatch('list|ls ');
+  expect(helpInformation.includes('list|ls ')).toBe(true);
 });
 
 it('when command has aliases then only first appears in help', () => {
@@ -29,50 +31,50 @@ it('when command has aliases then only first appears in help', () => {
     .command('list [thing]')
     .aliases(['ls', 'dir']);
   const helpInformation = program.helpInformation();
-  expect(helpInformation).toMatch('list|ls ');
+  expect(helpInformation.includes('list|ls ')).toBe(true);
 });
 
 it('when command name = alias then error', () => {
   const program = new commander.Command();
-  expect(() => {
+  throws(() => {
     program
       .command('fail')
       .alias('fail');
-  }).toThrow("Command alias can't be the same as its name");
+  }, { message: "Command alias can't be the same as its name" });
 });
 
 it('when use alias then action handler called', () => {
   const program = new commander.Command();
-  const actionMock = jest.fn();
+  const actionMock = sinon.spy();
   program
     .command('list')
     .alias('ls')
     .action(actionMock);
   program.parse(['ls'], { from: 'user' });
-  expect(actionMock).toHaveBeenCalled();
+  expect(actionMock.called).toBe(true);
 });
 
 it('when use second alias added separately then action handler called', () => {
   const program = new commander.Command();
-  const actionMock = jest.fn();
+  const actionMock = sinon.spy();
   program
     .command('list')
     .alias('ls')
     .alias('dir')
     .action(actionMock);
   program.parse(['dir'], { from: 'user' });
-  expect(actionMock).toHaveBeenCalled();
+  expect(actionMock.called).toBe(true);
 });
 
 it('when use second of aliases then action handler called', () => {
   const program = new commander.Command();
-  const actionMock = jest.fn();
+  const actionMock = sinon.spy();
   program
     .command('list')
     .aliases(['ls', 'dir'])
     .action(actionMock);
   program.parse(['dir'], { from: 'user' });
-  expect(actionMock).toHaveBeenCalled();
+  expect(actionMock.called).toBe(true);
 });
 
 it('when set alias then can get alias', () => {

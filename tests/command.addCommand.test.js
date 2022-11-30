@@ -1,10 +1,12 @@
 import { describe, expect, it } from "bun:test";
+import { throws, doesNotThrow } from 'node:assert';
 import commander from '../index.js';
+import sinon from 'sinon'
 
 // simple sanity check subcommand works
 it('when addCommand and specify subcommand then called', () => {
   const program = new commander.Command();
-  const leafAction = jest.fn();
+  const leafAction = sinon.spy();
   const sub = new commander.Command();
   sub
     .name('sub')
@@ -13,7 +15,7 @@ it('when addCommand and specify subcommand then called', () => {
     .addCommand(sub);
 
   program.parse('node test.js sub'.split(' '));
-  expect(leafAction).toHaveBeenCalled();
+  expect(leafAction.called).toBe(true);
 });
 
 it('when commands added using .addCommand and .command then internals similar', () => {
@@ -47,16 +49,16 @@ it('when commands added using .addCommand and .command then internals similar', 
 it('when command without name passed to .addCommand then throw', () => {
   const program = new commander.Command();
   const cmd = new commander.Command();
-  expect(() => {
+  throws(() => {
     program.addCommand(cmd);
-  }).toThrow();
+  });
 });
 
 it('when executable command with custom executableFile passed to .addCommand then ok', () => {
   const program = new commander.Command();
   const cmd = new commander.Command('sub');
   cmd.command('exec', 'exec description', { executableFile: 'custom' });
-  expect(() => {
+  doesNotThrow(() => {
     program.addCommand(cmd);
-  }).not.toThrow();
+  });
 });

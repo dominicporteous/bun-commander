@@ -4,71 +4,70 @@ import commander from '../index.js';
 // Do some low-level checks that the multiple ways of specifying command arguments produce same internal result,
 // and not exhaustively testing all methods elsewhere.
 
-test.each(getSingleArgCases('<explicit-required>'))('when add "<arg>" using %s then argument required', (methodName, cmd) => {
-  const argument = cmd._args[0];
-  const expectedShape = {
-    _name: 'explicit-required',
-    required: true,
-    variadic: false,
-    description: ''
-  };
-  expect(argument).toEqual(expectedShape);
-});
+for (const [methodName, cmd] of getSingleArgCases('<explicit-required>')){
+  it(`when add "<arg>" using ${methodName} then argument required`, () => {
+    const argument = cmd._args[0];
+    
+    expect(argument._name).toEqual('explicit-required');
+    expect(argument.required).toEqual(true);
+    expect(argument.variadic).toEqual(false);
+    expect(argument.description).toEqual('');
+  });
+}
 
-test.each(getSingleArgCases('implicit-required'))('when add "arg" using %s then argument required', (methodName, cmd) => {
-  const argument = cmd._args[0];
-  const expectedShape = {
-    _name: 'implicit-required',
-    required: true,
-    variadic: false,
-    description: ''
-  };
-  expect(argument).toEqual(expectedShape);
-});
+for (const [methodName, cmd] of getSingleArgCases('implicit-required')){
+  it(`when add "arg" using ${methodName} then argument required`, () => {
+    const argument = cmd._args[0];
 
-test.each(getSingleArgCases('[optional]'))('when add "[arg]" using %s then argument optional', (methodName, cmd) => {
-  const argument = cmd._args[0];
-  const expectedShape = {
-    _name: 'optional',
-    required: false,
-    variadic: false,
-    description: ''
-  };
-  expect(argument).toEqual(expectedShape);
-});
+    expect(argument._name).toEqual('implicit-required');
+    expect(argument.required).toEqual(true);
+    expect(argument.variadic).toEqual(false);
+    expect(argument.description).toEqual('');
 
-test.each(getSingleArgCases('<explicit-required...>'))('when add "<arg...>" using %s then argument required and variadic', (methodName, cmd) => {
-  const argument = cmd._args[0];
-  const expectedShape = {
-    _name: 'explicit-required',
-    required: true,
-    variadic: true,
-    description: ''
-  };
-  expect(argument).toEqual(expectedShape);
-});
+  });
+}
 
-test.each(getSingleArgCases('implicit-required...'))('when add "arg..." using %s then argument required and variadic', (methodName, cmd) => {
-  const argument = cmd._args[0];
-  const expectedShape = {
-    _name: 'implicit-required',
-    required: true,
-    variadic: true,
-    description: ''
-  };
-  expect(argument).toEqual(expectedShape);
-});
+for (const [methodName, cmd] of getSingleArgCases('[optional]')){
+  it(`when add "[arg]" using ${methodName} then argument optional`, () => {
+    const argument = cmd._args[0];
+    
+    expect(argument._name).toEqual('optional');
+    expect(argument.required).toEqual(false);
+    expect(argument.variadic).toEqual(false);
+    expect(argument.description).toEqual('');
+  });
+}
 
-test.each(getSingleArgCases('[optional...]'))('when add "[arg...]" using %s then argument optional and variadic', (methodName, cmd) => {
-  const argument = cmd._args[0];
-  const expectedShape = {
-    _name: 'optional',
-    required: false,
-    variadic: true,
-    description: ''
-  };
-  expect(argument).toEqual(expectedShape);
-});
+
+for (const [methodName, cmd] of getSingleArgCases('<explicit-required...>')){
+  it(`when add "<arg...>" using ${methodName} then argument required and variadic`, () => {
+    const argument = cmd._args[0];
+    expect(argument._name).toEqual('explicit-required');
+    expect(argument.required).toEqual(true);
+    expect(argument.variadic).toEqual(true);
+    expect(argument.description).toEqual('');
+  });
+}
+
+for (const [methodName, cmd] of getSingleArgCases('implicit-required...')){
+  it(`when add "arg..." using ${methodName} then argument required and variadic`, () => {
+    const argument = cmd._args[0];
+    expect(argument._name).toEqual('implicit-required');
+    expect(argument.required).toEqual(true);
+    expect(argument.variadic).toEqual(true);
+    expect(argument.description).toEqual('');
+  });
+}
+
+for (const [methodName, cmd] of getSingleArgCases('[optional...]')){
+  it(`when add "[arg...]" using ${methodName} then argument optional and variadic`, () => {
+    const argument = cmd._args[0];
+    expect(argument._name).toEqual('optional');
+    expect(argument.required).toEqual(false);
+    expect(argument.variadic).toEqual(true);
+    expect(argument.description).toEqual('');
+  });
+}
 
 function getSingleArgCases(arg) {
   return [
@@ -79,10 +78,13 @@ function getSingleArgCases(arg) {
   ];
 }
 
-test.each(getMultipleArgCases('<first>', '[second]'))('when add two arguments using %s then two arguments', (methodName, cmd) => {
-  expect(cmd._args[0].name()).toEqual('first');
-  expect(cmd._args[1].name()).toEqual('second');
-});
+
+for (const [methodName, cmd] of getMultipleArgCases('<first>', '[second]')){
+  it(`when add two arguments using ${methodName} then two arguments`, () => {
+    expect(cmd._args[0].name()).toEqual('first');
+    expect(cmd._args[1].name()).toEqual('second');
+  });
+}
 
 function getMultipleArgCases(arg1, arg2) {
   return [

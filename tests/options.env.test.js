@@ -1,6 +1,8 @@
-import { describe, expect, it } from "bun:test";
+import { beforeEach, describe, expect, it } from "bun:test";
 import commander from '../index.js';
 import sinon from 'sinon'
+
+const skip = () => {}
 
 // treating optional same as required, treat as option taking value rather than as boolean
 for(const fooFlags of ['-f, --foo <required-arg>', '-f, --foo [optional-arg]']){
@@ -82,12 +84,12 @@ describe('boolean flag', () => {
     const program = new commander.Command();
     program.addOption(new commander.Option('-f, --foo').env('BAR'));
     program.parse([], { from: 'user' });
-    expect(program.opts().foo).toBeUndefined();
+    expect(program.opts().foo).toBe(undefined);
   });
 
   it('when env defined with value and no cli then option true', () => {
     const program = new commander.Command();
-    process.env.BAR = 'env';
+    process.env.BAR = '';
     program.addOption(new commander.Option('-f, --foo').env('BAR'));
     program.parse([], { from: 'user' });
     expect(program.opts().foo).toBe(true);
@@ -144,6 +146,10 @@ describe('boolean no-flag', () => {
 });
 
 describe('boolean flag and negatable', () => {
+  beforeEach(() => {
+    process.env.BAR = undefined;
+    process.env.NO_BAR = undefined;
+  })
   it('when env undefined and no cli then option undefined', () => {
     const program = new commander.Command();
     program
@@ -272,24 +278,24 @@ describe('env only processed when applies', () => {
 });
 
 describe('events dispatched for env', () => {
-  const optionEnvEventMock = jest.fn();
+  const optionEnvEventMock = sinon.spy();
 
   afterEach(() => {
-    optionEnvEventMock.mockClear();
+    optionEnvEventMock.resetHistory();
     delete process.env.BAR;
   });
 
   it('when env defined then emit "optionEnv" and not "option"', () => {
     // Decided to do separate events, so test stays that way.
     const program = new commander.Command();
-    const optionEventMock = jest.fn();
+    const optionEventMock = sinon.spy();
     program.on('option:foo', optionEventMock);
     program.on('optionEnv:foo', optionEnvEventMock);
     process.env.BAR = 'env';
     program.addOption(new commander.Option('-f, --foo <required>').env('BAR'));
     program.parse([], { from: 'user' });
-    expect(optionEventMock).toHaveBeenCalledTimes(0);
-    expect(optionEnvEventMock).toHaveBeenCalledTimes(1);
+    expect(optionEventMock.called).toBe(false);
+    expect(optionEnvEventMock.called).toBe(true);
   });
 
   it('when env defined for required then emit "optionEnv" with value', () => {
@@ -298,7 +304,7 @@ describe('events dispatched for env', () => {
     process.env.BAR = 'env';
     program.addOption(new commander.Option('-f, --foo <required>').env('BAR'));
     program.parse([], { from: 'user' });
-    expect(optionEnvEventMock).toHaveBeenCalledWith('env');
+    expect(optionEnvEventMock.lastCall.args).toEqual(['env']);
   });
 
   it('when env defined for optional then emit "optionEnv" with value', () => {
@@ -307,7 +313,7 @@ describe('events dispatched for env', () => {
     process.env.BAR = 'env';
     program.addOption(new commander.Option('-f, --foo [optional]').env('BAR'));
     program.parse([], { from: 'user' });
-    expect(optionEnvEventMock).toHaveBeenCalledWith('env');
+    expect(optionEnvEventMock.lastCall.args).toEqual(['env']);
   });
 
   it('when env defined for boolean then emit "optionEnv" with no param', () => {
@@ -317,7 +323,7 @@ describe('events dispatched for env', () => {
     process.env.BAR = 'anything';
     program.addOption(new commander.Option('-f, --foo').env('BAR'));
     program.parse([], { from: 'user' });
-    expect(optionEnvEventMock).toHaveBeenCalledWith();
+    expect(optionEnvEventMock.lastCall.args).toEqual([]);
   });
 
   it('when env defined for negated boolean then emit "optionEnv" with no param', () => {
@@ -327,6 +333,6 @@ describe('events dispatched for env', () => {
     process.env.BAR = 'anything';
     program.addOption(new commander.Option('-F, --no-foo').env('BAR'));
     program.parse([], { from: 'user' });
-    expect(optionEnvEventMock).toHaveBeenCalledWith();
+    expect(optionEnvEventMock.lastCall.args).toEqual([]);
   });
 });

@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env bun
 console.log('default');
 if (process.argv.length > 2) {
   console.log(process.argv.slice(2));
