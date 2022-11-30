@@ -16,7 +16,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/tj/commander.js.git"
+    "url": "https://github.com/dominicporteous/bun-commander.git"
   },
   "scripts": {
     "lint": "npm run lint:javascript && npm run lint:typescript",
